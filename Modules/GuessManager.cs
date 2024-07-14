@@ -7,6 +7,7 @@ using TOHE.Modules.ChatManager;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
+using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
@@ -193,6 +194,7 @@ public static class GuessManager
 
                 if (CopyCat.playerIdList.Contains(pc.PlayerId))
                 {
+                    Logger.Info($"Guess Disabled for this player {pc.PlayerId}", "GuessManager");
                     if (!isUI) Utils.SendMessage(GetString("GuessDisabled"), pc.PlayerId);
                     else pc.ShowPopUp(GetString("GuessDisabled"));
                     return true;
@@ -222,18 +224,6 @@ public static class GuessManager
                     return true;
                 }
                 
-                if (pc.Is(CustomRoles.Phantom) && !Phantom.PhantomCanGuess.GetBool())
-                {
-                    if (!isUI) Utils.SendMessage(GetString("GuessDisabled"), pc.PlayerId);
-                    else pc.ShowPopUp(GetString("GuessDisabled"));
-                    return true;
-                }
-                if (role == CustomRoles.Knighted && pc.Is(CustomRoles.Monarch))
-                {
-                    if (!isUI) Utils.SendMessage(GetString("GuessKnighted"), pc.PlayerId);
-                    else pc.ShowPopUp(GetString("GuessKnighted"));
-                    return true;
-                }
                 if (role == CustomRoles.Bait && target.Is(CustomRoles.Bait) && Bait.BaitNotification.GetBool())
                 {
                     if (!isUI) Utils.SendMessage(GetString("GuessNotifiedBait"), pc.PlayerId);
@@ -256,12 +246,6 @@ public static class GuessManager
                 {
                     if (!isUI) Utils.SendMessage(GetString("GuessOnbound"), pc.PlayerId);
                     else pc.ShowPopUp(GetString("GuessOnbound"));
-                    return true;
-                }
-                if (role == CustomRoles.Phantom && target.Is(CustomRoles.Phantom))
-                {
-                    if (!isUI) Utils.SendMessage(GetString("GuessPhantom"), pc.PlayerId);
-                    else pc.ShowPopUp(GetString("GuessPhantom"));
                     return true;
                 }
 
@@ -406,48 +390,60 @@ public static class GuessManager
     public static TextMeshPro NameText(this PoolablePlayer p) => p.cosmetics.nameText;
     public static void RpcGuesserMurderPlayer(this PlayerControl pc) //ゲッサー用の殺し方
     {
-        // DEATH STUFF //
-        var amOwner = pc.AmOwner;
-        pc.Data.IsDead = true;
-        pc.RpcExileV2();
-        Main.PlayerStates[pc.PlayerId].SetDead();
-        var meetingHud = MeetingHud.Instance;
-        var hudManager = DestroyableSingleton<HudManager>.Instance;
-        SoundManager.Instance.PlaySound(pc.KillSfx, false, 0.8f);
-        if (!Options.DisableKillAnimationOnGuess.GetBool()) hudManager.KillOverlay.ShowKillAnimation(pc.Data, pc.Data);
-        if (amOwner)
+        try
         {
-            hudManager.ShadowQuad.gameObject.SetActive(false);
-            pc.NameText().GetComponent<MeshRenderer>().material.SetInt("_Mask", 0);
-            pc.RpcSetScanner(false);
-            ImportantTextTask importantTextTask = new GameObject("_Player").AddComponent<ImportantTextTask>();
-            importantTextTask.transform.SetParent(AmongUsClient.Instance.transform, false);
-            meetingHud.SetForegroundForDead();
+            // DEATH STUFF //
+            GameEndCheckerForNormal.ShouldNotCheck = true;
+            var amOwner = pc.AmOwner;
+            pc.Data.IsDead = true;
+            pc.RpcExileV2();
+            Main.PlayerStates[pc.PlayerId].SetDead();
+            var meetingHud = MeetingHud.Instance;
+            var hudManager = DestroyableSingleton<HudManager>.Instance;
+            SoundManager.Instance.PlaySound(pc.KillSfx, false, 0.8f);
+            if (!Options.DisableKillAnimationOnGuess.GetBool()) hudManager.KillOverlay.ShowKillAnimation(pc.Data, pc.Data);
+            if (amOwner)
+            {
+                hudManager.ShadowQuad.gameObject.SetActive(false);
+                pc.NameText().GetComponent<MeshRenderer>().material.SetInt("_Mask", 0);
+                pc.RpcSetScanner(false);
+                ImportantTextTask importantTextTask = new GameObject("_Player").AddComponent<ImportantTextTask>();
+                importantTextTask.transform.SetParent(AmongUsClient.Instance.transform, false);
+                meetingHud.SetForegroundForDead();
+            }
+            PlayerVoteArea voteArea = MeetingHud.Instance.playerStates.First(
+                x => x.TargetPlayerId == pc.PlayerId
+            );
+            if (voteArea == null) return;
+            if (voteArea.DidVote) voteArea.UnsetVote();
+            voteArea.AmDead = true;
+            voteArea.Overlay.gameObject.SetActive(true);
+            voteArea.Overlay.color = Color.white;
+            voteArea.XMark.gameObject.SetActive(true);
+            voteArea.XMark.transform.localScale = Vector3.one;
+            foreach (var playerVoteArea in meetingHud.playerStates.ToArray())
+            {
+                if (playerVoteArea.VotedFor != pc.PlayerId) continue;
+                playerVoteArea.UnsetVote();
+                var voteAreaPlayer = Utils.GetPlayerById(playerVoteArea.TargetPlayerId);
+                if (!voteAreaPlayer.AmOwner) continue;
+                meetingHud.ClearVote();
+            }
+            Swapper.CheckSwapperTarget(pc.PlayerId);
+            meetingHud.CheckForEndVoting();
+            _ = new LateTask(() => hudManager.SetHudActive(false), 0.3f, "SetHudActive in GuesserMurderPlayer", shoudLog: false);
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.GuessKill, SendOption.Reliable, -1);
+            writer.Write(pc.PlayerId);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+
+            GameEndCheckerForNormal.ShouldNotCheck = false;
         }
-        PlayerVoteArea voteArea = MeetingHud.Instance.playerStates.First(
-            x => x.TargetPlayerId == pc.PlayerId
-        );
-        if (voteArea == null) return;
-        if (voteArea.DidVote) voteArea.UnsetVote();
-        voteArea.AmDead = true;
-        voteArea.Overlay.gameObject.SetActive(true);
-        voteArea.Overlay.color = Color.white;
-        voteArea.XMark.gameObject.SetActive(true);
-        voteArea.XMark.transform.localScale = Vector3.one;
-        foreach (var playerVoteArea in meetingHud.playerStates.ToArray())
+        catch (Exception error)
         {
-            if (playerVoteArea.VotedFor != pc.PlayerId) continue;
-            playerVoteArea.UnsetVote();
-            var voteAreaPlayer = Utils.GetPlayerById(playerVoteArea.TargetPlayerId);
-            if (!voteAreaPlayer.AmOwner) continue;
-            meetingHud.ClearVote();
+            // try{} catch{} added in case an exception occurs, and "ShouldNotCheck" will remain true forever
+            Logger.Error($"Error after guesser murder: {error}", "RpcGuesserMurderPlayer");
+            GameEndCheckerForNormal.ShouldNotCheck = false;
         }
-        Swapper.CheckSwapperTarget(pc.PlayerId);
-        meetingHud.CheckForEndVoting();
-        _ = new LateTask(() => hudManager.SetHudActive(false), 0.3f, "SetHudActive in GuesserMurderPlayer", shoudLog: false);
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.GuessKill, SendOption.Reliable, -1);
-        writer.Write(pc.PlayerId);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void RpcClientGuess(PlayerControl pc)
     {
@@ -682,7 +678,7 @@ public static class GuessManager
             container.transform.localPosition = new Vector3(0, 0, -200f);
             guesserUI = container.gameObject;
 
-            List<int> i = [0, 0, 0, 0];
+            List<int> info = [0, 0, 0, 0];
             var buttonTemplate = __instance.playerStates[0].transform.FindChild("votePlayerBase");
             var maskTemplate = __instance.playerStates[0].transform.FindChild("MaskArea");
             var smallButtonTemplate = __instance.playerStates[0].Buttons.transform.Find("CancelButton");
@@ -703,7 +699,12 @@ public static class GuessManager
             exitButton.GetComponent<PassiveButton>().OnClick.RemoveAllListeners();
             exitButton.GetComponent<PassiveButton>().OnClick.AddListener((Action)(() =>
             {
-                __instance.playerStates.ToList().ForEach(x => x.gameObject.SetActive(true));
+                __instance.playerStates.ToList().ForEach(x =>
+                {
+                    x.gameObject.SetActive(true);
+                    x.Buttons.transform.gameObject.SetActive(false);
+                });
+
                 UnityEngine.Object.Destroy(container.gameObject);
             }));
             ExitButton = exitButton.GetComponent<PassiveButton>();
@@ -769,7 +770,7 @@ public static class GuessManager
                     Custom_Team.Addon => new Color32(255, 154, 206, byte.MaxValue),
                     _ => throw new NotImplementedException(),
                 };
-                Logger.Info(Teamlabel.color.ToString(), ((Custom_Team)TabId).ToString());
+                //Logger.Info(Teamlabel.color.ToString(), ((Custom_Team)TabId).ToString());
                 Teamlabel.text = GetString("Type" + ((Custom_Team)TabId).ToString());
                 Teamlabel.alignment = TextAlignmentOptions.Center;
                 Teamlabel.transform.localPosition = new Vector3(0, 0, Teamlabel.transform.localPosition.z);
@@ -914,15 +915,12 @@ public static class GuessManager
 
             foreach (var role in orderedRoleList)
             {
+                if (role.IsVanilla()) continue;
+
                 if (role is CustomRoles.GM
                     or CustomRoles.SpeedBooster
-                    or CustomRoles.Engineer
-                    or CustomRoles.Crewmate
                     or CustomRoles.Oblivious
                     or CustomRoles.ChiefOfPolice
-                    or CustomRoles.Scientist
-                    or CustomRoles.Impostor
-                    or CustomRoles.Shapeshifter
                     or CustomRoles.Flash
                     or CustomRoles.NotAssigned
                     or CustomRoles.SuperStar
@@ -941,7 +939,11 @@ public static class GuessManager
             }
             void CreateRole(CustomRoles role)
             {
-                if (40 <= i[(int)role.GetCustomRoleTeam()]) i[(int)role.GetCustomRoleTeam()] = 0;
+                var tempMini = Mini.IsEvilMini;
+                if (role is CustomRoles.EvilMini) Mini.IsEvilMini = true;
+                else if (role is CustomRoles.NiceMini) Mini.IsEvilMini = false;
+
+                if (40 <= info[(int)role.GetCustomRoleTeam()]) info[(int)role.GetCustomRoleTeam()] = 0;
                 Transform buttonParent = new GameObject().transform;
                 buttonParent.SetParent(container);
                 Transform button = UnityEngine.Object.Instantiate(buttonTemplate, buttonParent);
@@ -955,8 +957,8 @@ public static class GuessManager
                 }
                 RoleButtons[role.GetCustomRoleTeam()].Add(button);
                 buttons.Add(button);
-                int row = i[(int)role.GetCustomRoleTeam()] / 5;
-                int col = i[(int)role.GetCustomRoleTeam()] % 5;
+                int row = info[(int)role.GetCustomRoleTeam()] / 5;
+                int col = info[(int)role.GetCustomRoleTeam()] % 5;
                 buttonParent.localPosition = new Vector3(-3.47f + 1.75f * col, 1.5f - 0.45f * row, -200f);
                 buttonParent.localScale = new Vector3(0.55f, 0.55f, 1f);
                 label.text = GetString(role.ToString());
@@ -965,7 +967,7 @@ public static class GuessManager
                 label.transform.localPosition = new Vector3(0, 0, label.transform.localPosition.z);
                 label.transform.localScale *= 1.6f;
                 label.autoSizeTextContainer = true;
-                int copiedIndex = i[(int)role.GetCustomRoleTeam()];
+                //int copiedIndex = info[(int)role.GetCustomRoleTeam()];
 
                 button.GetComponent<PassiveButton>().OnClick.RemoveAllListeners();
                 if (PlayerControl.LocalPlayer.IsAlive()) button.GetComponent<PassiveButton>().OnClick.AddListener((Action)(() =>
@@ -991,8 +993,10 @@ public static class GuessManager
 
                     }
                 }));
-                i[(int)role.GetCustomRoleTeam()]++;
+                info[(int)role.GetCustomRoleTeam()]++;
                 ind++;
+
+                Mini.IsEvilMini = tempMini;
             }
             container.transform.localScale *= 0.75f;
             GuesserSelectRole(Custom_Team.Crewmate);

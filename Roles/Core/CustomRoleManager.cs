@@ -7,6 +7,7 @@ using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
+using TOHE.Roles.Vanilla;
 
 namespace TOHE.Roles.Core;
 
@@ -85,6 +86,8 @@ public static class CustomRoleManager
         }
 
         player.GetRoleClass()?.ApplyGameOptions(opt, player.PlayerId);
+
+        if (NoisemakerTOHE.HasEnabled) NoisemakerTOHE.ApplyGameOptionsForOthers(player);
 
         if (DollMaster.HasEnabled && DollMaster.IsDoll(player.PlayerId))
         {
@@ -355,8 +358,11 @@ public static class CustomRoleManager
         // Check dead body for others roles
         CheckDeadBody(killer, target, inMeeting);
 
-        // Check Lovers Suicide
-        FixedUpdateInNormalGamePatch.LoversSuicide(target.PlayerId, inMeeting);
+        if (!(killer.PlayerId == target.PlayerId && target.IsDisconnected()))
+        {
+            // Check Lovers Suicide
+            FixedUpdateInNormalGamePatch.LoversSuicide(target.PlayerId, inMeeting);
+        }
     }
     
     /// <summary>

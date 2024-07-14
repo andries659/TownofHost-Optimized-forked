@@ -1,6 +1,5 @@
 using Hazel;
 using InnerNet;
-using System;
 using TOHE.Roles.Core;
 using static TOHE.Translator;
 using static TOHE.Utils;
@@ -26,7 +25,7 @@ internal class Mini : RoleBase
 
 
     public static int Age = new();
-    private static bool IsEvilMini = false;
+    public static bool IsEvilMini = false;
     private static int GrowUpTime = new();
     //private static int GrowUp = new();
     private static long LastFixedUpdate = new();
@@ -41,7 +40,7 @@ internal class Mini : RoleBase
         CanBeEvil = BooleanOptionItem.Create(Id + 106, "CanBeEvil", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Mini]);
         EvilMiniSpawnChances = IntegerOptionItem.Create(Id + 108, "EvilMiniSpawnChances", new(0, 100, 5), 50, TabGroup.CrewmateRoles, false).SetParent(CanBeEvil)
             .SetValueFormat(OptionFormat.Percent);
-        MinorCD = FloatOptionItem.Create(Id + 110, "KillCooldown", new(0f, 180f, 2.5f), 45f, TabGroup.CrewmateRoles, false).SetParent(CanBeEvil)
+        MinorCD = FloatOptionItem.Create(Id + 110, GeneralOption.KillCooldown, new(0f, 180f, 2.5f), 45f, TabGroup.CrewmateRoles, false).SetParent(CanBeEvil)
             .SetValueFormat(OptionFormat.Seconds);
         MajorCD = FloatOptionItem.Create(Id + 112, "MajorCooldown", new(0f, 180f, 2.5f), 15f, TabGroup.CrewmateRoles, false).SetParent(CanBeEvil)
             .SetValueFormat(OptionFormat.Seconds);
@@ -55,7 +54,8 @@ internal class Mini : RoleBase
         Age = 0;
         misguessed = false;
 
-        if (AmongUsClient.Instance.AmHost)
+        IsEvilMini = false;
+        if (AmongUsClient.Instance.AmHost && CustomRoles.Mini.IsEnable())
         {
             var rand = IRandom.Instance;
             IsEvilMini = CanBeEvil.GetBool() && (rand.Next(0, 100) < EvilMiniSpawnChances.GetInt());
@@ -188,7 +188,7 @@ internal class Mini : RoleBase
         return false;
     }
 
-    public override void CheckExile(GameData.PlayerInfo exiled, ref bool DecidedWinner, bool isMeetingHud, ref string name)
+    public override void CheckExile(NetworkedPlayerInfo exiled, ref bool DecidedWinner, bool isMeetingHud, ref string name)
     {
         var mini = GetPlayerById(exiled.PlayerId);
         if (mini != null && mini.Is(CustomRoles.NiceMini) && Age < 18)
