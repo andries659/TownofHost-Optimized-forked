@@ -14,6 +14,7 @@ internal class Valkyrie : RoleBase
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateKilling;
 
+    private static OptionItem KillCooldown;
     private static OptionItem CanVent;
     private static OptionItem RevengeTime;
 
