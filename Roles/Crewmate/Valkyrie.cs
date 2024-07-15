@@ -14,7 +14,7 @@ internal class Valkyrie : RoleBase
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateKilling;
 
-    private static OptionItem Can Vent;
+    private static OptionItem CanVent;
     private static OptionItem RevengeTime;
 
     public static PlayerControl Killer = null;
@@ -27,7 +27,7 @@ internal class Valkyrie : RoleBase
   {
 
    SetupSingleRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Valkyrie, 1, zeroOne: false);
-        KillCooldown = FloatOptionItem.Create(Id + 10, GeneralOption.KillCooldown, new(300f, 300f, 2.5f), 300f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Valkyrie])
+        KillCooldown = FloatOptionItem.Create(Id + 10, GeneralOption.KillCooldown, new(300f, 300f, 300f), 300f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Valkyrie])
             .SetValueFormat(OptionFormat.Seconds);
         RevengeTime = IntegerOptionItem.Create(Id + 11, "ValkyrieRevengeTime", new(0, 60, 1), 30, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Valkyrie])
             .SetValueFormat(OptionFormat.Seconds);
