@@ -42,7 +42,6 @@ internal class Valkyrie : RoleBase
         Killer = null;
         tempKillTimer = 0;
     }
-
        public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
