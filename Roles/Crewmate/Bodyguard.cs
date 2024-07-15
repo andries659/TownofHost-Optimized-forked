@@ -53,7 +53,6 @@ internal class Bodyguard : RoleBase
                 Main.PlayerStates[bodyguardId].deathReason = PlayerState.DeathReason.Sacrifice;
                 bodyguard.RpcMurderPlayer(killer);
                 bodyguard.SetRealKiller(killer);
-                bodyguard.RpcMurderPlayer(bodyguard);
                 Logger.Info($"{bodyguard.GetRealName()} Stand up and die with the gangster {killer.GetRealName()}", "Bodyguard");
                 return true;
             }
