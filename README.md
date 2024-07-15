@@ -3,7 +3,7 @@
 
 <br>
 
-<img align="left" alt="Cover" src="Resources/Images/TOHO_emblem.png" width="50%" height="300" /> 
+<img align="left" alt="Cover" src="Resources/Images/TOHO_emblem.png" width="50%" height="150" /> 
 
 <p align="right">
   
