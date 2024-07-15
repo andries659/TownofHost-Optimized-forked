@@ -89,21 +89,6 @@ internal class RunLoginPatch
 #endif
     }
 
-    public static void Postfix(ref bool canOnline)
-    {
-        isAllowedOnline = canOnline;
-
-        if (!EOSManager.Instance.loginFlowFinished) return;
-
-        var friendcode = EOSManager.Instance.friendCode;
-        Main.Instance.StartCoroutine(dbConnect.Init());
-        if (friendcode == null || friendcode == "")
-        {
-            EOSManager.Instance.attemptAuthAgain = true;
-            Logger.Info("friendcode not found", "EOSManager");
-            canOnline = false;
-        }
-    }
 }
 [HarmonyPatch(typeof(BanMenu), nameof(BanMenu.SetVisible))]
 internal class BanMenuSetVisiblePatch
