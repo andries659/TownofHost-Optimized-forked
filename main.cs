@@ -27,8 +27,8 @@ public class Main : BasePlugin
     // == プログラム設定 / Program Config ==
     public const string OriginalForkId = "OriginalTOH";
 
-    public static readonly string ModName = "TOHE";
-    public static readonly string ForkId = "TOHE";
+    public static readonly string ModName = "TOHO";
+    public static readonly string ForkId = "TOHO";
     public static readonly string ModColor = "#ffc0cb";
     public static readonly bool AllowPublicRoom = true;
 
@@ -38,9 +38,9 @@ public class Main : BasePlugin
 
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
 
-    public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
+    public const string PluginGuid = "com.Limeau.townofhostoptimized";
     public const string PluginVersion = "2024.0709.200.09000"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "2.0.0 Canary 9";
+    public const string PluginDisplayVersion = "1.0.0";
     public const string SupportedVersionAU = "2024.6.18";
 
     /******************* Change one of the three variables to true before making a release. *******************/
@@ -53,15 +53,15 @@ public class Main : BasePlugin
     public static readonly bool ShowUpdateButton = true;
 
     public static readonly bool ShowGitHubButton = true;
-    public static readonly string GitHubInviteUrl = "https://github.com/0xDrMoe/TownofHost-Enhanced";
+    public static readonly string GitHubInviteUrl = "https://github.com/Limeau/TownofHost-Optimized";
 
     public static readonly bool ShowDiscordButton = true;
-    public static readonly string DiscordInviteUrl = "https://discord.gg/tohe";
+    public static readonly string DiscordInviteUrl = "https://discord.gg/imphq";
 
-    public static readonly bool ShowWebsiteButton = true;
+    public static readonly bool ShowWebsiteButton = false;
     public static readonly string WebsiteInviteUrl = "https://tohre.dev";
     
-    public static readonly bool ShowKofiButton = true;
+    public static readonly bool ShowKofiButton = false;
     public static readonly string kofiInviteUrl = "https://ko-fi.com/TOHE";
 
     public Harmony Harmony { get; } = new Harmony(PluginGuid);
