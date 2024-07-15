@@ -1,4 +1,4 @@
-﻿using TOHE.Roles.Double;
+using TOHE.Roles.Double;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -16,13 +16,13 @@ internal class Provocateur : RoleBase
     //==================================================================\\
 
     private static OptionItem ProvKillCD;
-    
+
     public static readonly Dictionary<byte, byte> Provoked = [];
 
     public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Provocateur);
-        ProvKillCD = FloatOptionItem.Create(Id + 10, GeneralOption.KillCooldown, new(0f, 100f, 2.5f), 15f, TabGroup.NeutralRoles, false)
+        ProvKillCD = FloatOptionItem.Create(Id + 10, "KillCooldown", new(0f, 100f, 2.5f), 15f, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Provocateur])
             .SetValueFormat(OptionFormat.Seconds);
     }
@@ -37,9 +37,6 @@ internal class Provocateur : RoleBase
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = ProvKillCD.GetFloat();
     public override bool CanUseKillButton(PlayerControl pc) => true;
-    public override void SetPostKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = IsKilled(id) ? 300f : KillCooldown.GetFloat();
-    public override void CanUseKillButton(PlayerControl pc)
-        => !IsKilled(pc.PlayerId);
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (Mini.Age < 18 && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
@@ -49,7 +46,7 @@ internal class Provocateur : RoleBase
         }
         Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.PissedOff;
         killer.RpcMurderPlayer(target);
-        killer.SetPostKillCooldown();
+        killer.RpcMurderPlayer(killer);
         killer.SetRealKiller(target);
         Provoked.TryAdd(killer.PlayerId, target.PlayerId);
         return false;
