@@ -16,7 +16,7 @@ internal class Provocateur : RoleBase
     //==================================================================\\
 
     private static OptionItem ProvKillCD;
-
+    
     public static readonly Dictionary<byte, byte> Provoked = [];
 
     public override void SetupCustomOption()
@@ -37,6 +37,9 @@ internal class Provocateur : RoleBase
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = ProvKillCD.GetFloat();
     public override bool CanUseKillButton(PlayerControl pc) => true;
+    public override void SetPostKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = IsKilled(id) ? 300f : KillCooldown.GetFloat();
+    public override void CanUseKillButton(PlayerControl pc)
+        => !IsKilled(pc.PlayerId);
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (Mini.Age < 18 && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
@@ -46,7 +49,7 @@ internal class Provocateur : RoleBase
         }
         Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.PissedOff;
         killer.RpcMurderPlayer(target);
-        killer.RpcMurderPlayer(killer);
+        killer.SetPostKillCooldown();
         killer.SetRealKiller(target);
         Provoked.TryAdd(killer.PlayerId, target.PlayerId);
         return false;
