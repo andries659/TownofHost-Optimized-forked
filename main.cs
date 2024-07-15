@@ -711,6 +711,7 @@ public enum CustomRoles
     Transporter,
     TimeManager,
     TimeMaster,
+    Valkyrie,
     Veteran,
     Vigilante,
     Witness,
