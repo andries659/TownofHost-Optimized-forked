@@ -1,3 +1,5 @@
+using static TOHE.Options;
+
 namespace TOHE.Roles.AddOns.Common
 {
     public static class Evader
