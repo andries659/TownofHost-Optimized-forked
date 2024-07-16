@@ -68,13 +68,13 @@ internal class Artist : RoleBase
 
     private void SetPainting(PlayerControl killer, PlayerControl target)
     {
-        if (!IsPainted(killer.PlayerId, target.PlayerId))
+        if (!PlayerSkinsPainted(killer.PlayerId, target.PlayerId))
         {
                 SetSkin(target, PaintedOutfit);
             }
 
             PlayerSkinsPainted[killer.PlayerId].Add(target.PlayerId);
-            Utils.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Artist), GetString("ArtistPaintedSkin")));
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Artist), GetString("ArtistPaintedSkin")));
             target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Artist), GetString("PaintedByArtist")));
 
             OriginalPlayerSkins.Add(target.PlayerId, Camouflage.PlayerSkins[target.PlayerId]);
