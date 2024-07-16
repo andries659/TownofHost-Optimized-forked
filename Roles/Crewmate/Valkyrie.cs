@@ -51,8 +51,8 @@ internal class Valkyrie : RoleBase
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
     }
-    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
-    public override bool CanUseKillButton(PlayerControl pc) => false;
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.300f;
+    public override bool CanUseKillButton(PlayerControl pc) => true;
     public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
     public override bool CanUseSabotage(PlayerControl pc) => false;
 
