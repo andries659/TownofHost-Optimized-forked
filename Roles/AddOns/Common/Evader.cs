@@ -6,18 +6,19 @@ public static class Evader
 {
     private const int Id = 21204;
 
+    public static OptionItem ChanceToEvadeVote;
     public static OptionItem ImpCanBeEvader;
     public static OptionItem CrewCanBeEvader;
     public static OptionItem NeutralCanBeEvader;
-    public static OptionItem ChanceToEvadeVote;
+
 
     private static Dictionary<byte, bool> Evade;
         
     
-    public static void SetupCustomOption()
+    public static void SetupCustomOptions()
     {
-        Options.SetupAdtRoleOptions(Id, CustomRoles.Evader, canSetNum: true);
-        ChanceToEvadeVote = IntegerOptionItem.Create(Id + 13, "ChanceToEvadeVote", new(0, 100, 1), 50, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Evader])
+        SetupAdtRoleOptions(Id, CustomRoles.Evader, canSetNum: true);
+        ChanceToEvadeVote = IntegerOptionItem.Create(Id + 13, "ChanceToEvadeVote", new(0, 100, 5), 50, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Evader])
             .SetValueFormat(OptionFormat.Percent);
         ImpCanBeEvader = BooleanOptionItem.Create(Id + 10, "ImpCanBeEvader", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Evader]);
         CrewCanBeEvader = BooleanOptionItem.Create(Id + 11, "CrewCanBeEvader", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Evader]);
@@ -27,11 +28,15 @@ public static class Evader
     {
         Evade = [];
     }
-        private static void EvadeChance()
+
+    private static void EvadeChance()
+    {
+        var rd = IRandom.Instance;
+        if (rd.Next(0, 101) < ChanceToEvadeVote.GetInt());
         {
-            var rd = IRandom.Instance;
-            if (rd.Next(0, 101) < ChanceToEvadeVote.GetInt());
+        //Code suggests there should be something here
         }
+    }
 
     public static void CheckRealVotes(PlayerControl target, ref int VoteNum)
 
