@@ -5,9 +5,10 @@ namespace TOHE.Roles.AddOns.Common;
 public static class Evader
 {
     private const int Id = 21204;
-    public static OptionItem CanBeOnCrew;
-    public static OptionItem CanBeOnImp;
-    public static OptionItem CanBeOnNeutral;
+
+    public static OptionItem ImpCanBeEvader;
+    public static OptionItem CrewCanBeEvader;
+    public static OptionItem NeutralCanBeEvader;
     public static OptionItem ChanceToEvadeVote;
 
     private static Dictionary<byte, bool> Evade;
@@ -15,7 +16,7 @@ public static class Evader
     
     public static void SetupCustomOption()
     {
-        Options.SetupAdtRoleOptions(Id, CustomRoles.Influenced, canSetNum: true);
+        Options.SetupAdtRoleOptions(Id, CustomRoles.Evader, canSetNum: true);
         ChanceToEvadeVote = IntegerOptionItem.Create(Id + 13, "ChanceToEvadeVote", new(0, 100, 1), 50, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Evader])
             .SetValueFormat(OptionFormat.Percent);
         CanBeOnImp = BooleanOptionItem.Create(Id + 10, "ImpCanBeEvader", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Evader]);
