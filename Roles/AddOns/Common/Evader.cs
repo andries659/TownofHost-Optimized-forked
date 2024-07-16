@@ -10,42 +10,37 @@ public static class Evader
     public static OptionItem CanBeOnNeutral;
     public static OptionItem ChanceToEvadeVote;
 
-    public enum StateVote
-    {
-        TryEvadeVote
-    }
+    private static Dictionary<byte, bool> Evade;
         
     
     public static void SetupCustomOption()
     {
         Options.SetupAdtRoleOptions(Id, CustomRoles.Influenced, canSetNum: true);
+        ChanceToEvadeVote = IntegerOptionItem.Create(Id + 13, "ChanceToEvadeVote", new(0, 100, 1), 50, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Evader])
+            .SetValueFormat(OptionFormat.Percent);
         CanBeOnImp = BooleanOptionItem.Create(Id + 10, "ImpCanBeEvader", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Evader]);
         CanBeOnCrew = BooleanOptionItem.Create(Id + 11, "CrewCanBeEvader", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Evader]);
         CanBeOnNeutral = BooleanOptionItem.Create(Id + 12, "NeutralCanBeEvader", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Evader]);
-        ChanceToEvadeVote = IntegerOptionItem.Create(Id + 13, "ChanceToEvadeVote", new(0, 100, 1), 50, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Evader])
-            .SetValueFormat(OptionFormat.Percent);
     }
-
-    }
-    public static bool EvadeRand(PlayerControl victim, StateVote state)
+    public static void Init()
     {
-        var shouldBeEvade = IRandom.Instance.Next(1, 100) <= state switch
+        Evade = [];
+    }
+        private static void EvadeChance()
         {
-            StateVote.TryEvadeVote => ChanceToEvadeVote.GetInt(),
+            var rd = IRandom.Instance;
+            if (rd.Next(0, 101) < ChanceToEvadeVote.GetInt());
+        }
 
-            _ => -1
-        };
+    public static void CheckRealVotes(PlayerControl target, ref int VoteNum)
 
-        if (shouldBeEvade)
+    {
+        EvadeChance();
         {
-            public static void CheckRealVotes(PlayerControl target, ref int VoteNum)
+            if (target.Is(CustomRoles.Evader))
             {
-                if (target.Is(CustomRoles.Evader))
-                {
-                    VoteNum = 0;
-                }
-                return true;
+                VoteNum = 0;
             }
-        return false;
+        }
     }
 }
