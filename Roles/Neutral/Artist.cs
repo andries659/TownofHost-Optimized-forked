@@ -4,13 +4,17 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
 
+    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Artist);
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
+
 internal class Artist : RoleBase
 {
     private readonly static NetworkedPlayerInfo.PlayerOutfit PaintedOutfit = new NetworkedPlayerInfo.PlayerOutfit().Set("", 15, "", "", "visor_Crack", "", "");
     private static readonly Dictionary<byte, NetworkedPlayerInfo.PlayerOutfit> OriginalPlayerSkins = [];
 
     
-    private const int Id = 12845;
+    private const int Id = 12889;
     private static readonly HashSet<byte> PlayerIds = [];
     public static bool HasEnabled => PlayerIds.Any();
     
@@ -21,7 +25,7 @@ internal class Artist : RoleBase
     private static OptionItem PaintCooldown;
     private static OptionItem CanVent;
     private static OptionItem HasImpostorVision;
-    private static OptionItem HideNamesOfPaintedPlayers;
+    private static OptionItem HideNameOfPaintedPlayer;
 
     private static readonly Dictionary<byte, float> NowCooldown = [];
     private static readonly Dictionary<byte, List<byte>> PlayerSkinsPainted = [];
@@ -31,9 +35,9 @@ internal class Artist : RoleBase
         SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Artist;
         KillCooldown = FloatOptionItem.Create(Id + 10, GeneralOption.KillCooldown, new(0f, 180f, 2.5f), 30f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Artist])
             .SetValueFormat(OptionFormat.Seconds);
-        PaintCooldown = FloatOptionItem.Create(Id + 11, GeneralOption.PaintlCooldown, new(0f, 180f, 2.5f), 5f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Artist])
+        PaintCooldown = FloatOptionItem.Create(Id + 11, GeneralOption.PaintCooldown, new(0f, 180f, 2.5f), 5f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Artist])
             .SetValueFormat(OptionFormat.Seconds);
-        HideNameOfConsumedPlayer = BooleanOptionItem.Create(Id + 12, "ArtistHideNamePainted", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Artist]);
+        HideNameOfPaintedPlayer = BooleanOptionItem.Create(Id + 12, "ArtistHideNamePainted", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Artist]);
 
         public override void Init()
     {
