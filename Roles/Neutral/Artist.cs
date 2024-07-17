@@ -12,7 +12,7 @@ internal class Artist : RoleBase
 
     private static readonly Dictionary<byte, NetworkedPlayerInfo.PlayerOutfit> OriginalPlayerSkins = new();
 
-    private const int Id = 12889;
+    private const int Id = 28800;
     private static readonly HashSet<byte> PlayerIds = new();
     public static bool HasEnabled => PlayerIds.Any();
 
