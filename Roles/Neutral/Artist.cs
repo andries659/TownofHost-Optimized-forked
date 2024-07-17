@@ -18,8 +18,9 @@ internal class Artist : RoleBase
 
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
-    private static OptionItem HideNameOfPaintedPlayer;
+
     private static OptionItem KillCooldown;
+    private static OptionItem HideNameOfPaintedPlayer;
     private static OptionItem PaintCooldown;
     private static OptionItem CanVent;
     private static OptionItem HasImpostorVision;
@@ -32,11 +33,11 @@ internal class Artist : RoleBase
         SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Artist);
         KillCooldown = FloatOptionItem.Create(Id + 10, GeneralOption.KillCooldown, new(0f, 180f, 2.5f), 30f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Artist])
             .SetValueFormat(OptionFormat.Seconds);
-        PaintCooldown = FloatOptionItem.Create(Id + 11, "PaintCooldown", new(0f, 180f, 2.5f), 5f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Artist])
+        PaintCooldown = FloatOptionItem.Create(Id + 11, "ArtistPaintCooldown", new(0f, 180f, 2.5f), 20f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Artist])
             .SetValueFormat(OptionFormat.Seconds);
         HideNameOfPaintedPlayer = BooleanOptionItem.Create(Id + 12, "ArtistHideNamePainted", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Artist]);
-        CanVent = BooleanOptionItem.Create(Id + 12, GeneralOption.CanVent, true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Artist]);
-        HasImpostorVision = BooleanOptionItem.Create(Id + 13, GeneralOption.ImpostorVision, true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Artist]);
+        CanVent = BooleanOptionItem.Create(Id + 13, GeneralOption.CanVent, true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Artist]);
+        HasImpostorVision = BooleanOptionItem.Create(Id + 14, GeneralOption.ImpostorVision, true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Artist]);
     }
 
     public override void Init()
@@ -81,9 +82,6 @@ internal class Artist : RoleBase
 
         OriginalPlayerSkins[target.PlayerId] = Camouflage.PlayerSkins[target.PlayerId];
         Camouflage.PlayerSkins[target.PlayerId] = PaintedOutfit;
-
-        SendRPC(killer.PlayerId, target.PlayerId);
-        killer.SetKillCooldown();
     }
 
     private static void SetSkin(PlayerControl target, NetworkedPlayerInfo.PlayerOutfit outfit)
