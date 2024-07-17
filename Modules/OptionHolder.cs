@@ -892,7 +892,7 @@ public static class Options
 
         DoubleShot.SetupCustomOption();
         
-        Evader.SetupCustomOption();
+        Evader.SetupCustomOptions();
 
         Flash.SetupCustomOption();
 
