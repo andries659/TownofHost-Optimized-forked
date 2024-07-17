@@ -6,12 +6,11 @@ namespace TOHE.Roles.Neutral;
 
 internal class Artist : RoleBase
 {
-    
     private static readonly NetworkedPlayerInfo.PlayerOutfit PaintedOutfit = new NetworkedPlayerInfo.PlayerOutfit()
         .Set("", 15, "", "", "visor_Crack", "", "");
 
     private static readonly Dictionary<byte, NetworkedPlayerInfo.PlayerOutfit> OriginalPlayerSkins = new();
-
+    
     private const int Id = 28800;
     private static readonly HashSet<byte> PlayerIds = new();
     public static bool HasEnabled => PlayerIds.Any();
@@ -27,7 +26,8 @@ internal class Artist : RoleBase
 
     private static readonly Dictionary<byte, float> NowCooldown = new();
     private static readonly Dictionary<byte, List<byte>> PlayerSkinsPainted = new();
-    
+    private readonly Dictionary<byte, int> KillClickCount = new(); // Track click counts
+
     public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Artist);
@@ -44,21 +44,22 @@ internal class Artist : RoleBase
     {
         PlayerSkinsPainted.Clear();
         OriginalPlayerSkins.Clear();
-         PlayerIds.Clear();
+        PlayerIds.Clear();
+        KillClickCount.Clear(); // Reset click counts
     }
-
 
     public override void Add(byte playerId)
     {
-         PlayerIds.Add(playerId);
+        PlayerIds.Add(playerId);
+        KillClickCount[playerId] = 0; // Initialize click count for the player
 
         var pc = Utils.GetPlayerById(playerId);
         pc.AddDoubleTrigger();
 
-         if (!Main.ResetCamPlayerList.Contains(playerId))
+        if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
-     
     }
+
     public override void SetKillCooldown(byte id) 
         => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
 
@@ -67,7 +68,29 @@ internal class Artist : RoleBase
 
     public override bool CanUseKillButton(PlayerControl pc) => true;
 
-    public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
+    public override void UseKillButton(PlayerControl killer, PlayerControl target)
+    {
+        if (!KillClickCount.ContainsKey(killer.PlayerId))
+            KillClickCount[killer.PlayerId] = 0;
+
+        KillClickCount[killer.PlayerId]++;
+
+        if (KillClickCount[killer.PlayerId] == 1)
+        {
+            // Paint the target grey
+            SetPainting(killer, target);
+            killer.Notify("You painted " + target.Data.PlayerName + " grey!");
+        }
+        else if (KillClickCount[killer.PlayerId] == 2)
+        {
+            // Perform a normal kill
+            // Reset click count
+            KillClickCount[killer.PlayerId] = 0;
+            // Add killing logic here (this will depend on the existing kill logic in the game)
+            killer.Kill(target);
+            killer.Notify("You killed " + target.Data.PlayerName + "!");
+        }
+    }
 
     private void SetPainting(PlayerControl killer, PlayerControl target)
     {
@@ -106,8 +129,8 @@ internal class Artist : RoleBase
             .Write(target.GetNextRpcSequenceId(RpcCalls.SetSkinStr))
             .EndRpc();
 
-            target.SetVisor(outfit.VisorId, outfit.ColorId);
-            sender.AutoStartRpc(target.NetId, (byte)RpcCalls.SetVisorStr)
+        target.SetVisor(outfit.VisorId, outfit.ColorId);
+        sender.AutoStartRpc(target.NetId, (byte)RpcCalls.SetVisorStr)
             .Write(outfit.VisorId)
             .Write(target.GetNextRpcSequenceId(RpcCalls.SetVisorStr))
             .EndRpc();
@@ -120,5 +143,4 @@ internal class Artist : RoleBase
 
         sender.SendMessage();
     }
-    
 }
