@@ -720,6 +720,7 @@ public enum CustomRoles
     Agitater,
     Amnesiac,
     Arsonist,
+    Artist,
     Bandit,
     BloodKnight,
     Collector,
