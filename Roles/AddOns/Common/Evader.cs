@@ -4,7 +4,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public static class Evader
 {
-    private const int Id = 21204;
+    private const int Id = 28500;
 
     public static OptionItem ChanceToEvadeVote;
     public static OptionItem ImpCanBeEvader;
