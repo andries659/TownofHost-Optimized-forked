@@ -7,7 +7,7 @@ namespace TOHE.Roles.Crewmate;
 internal class Valkyrie : RoleBase
 {
 
-    private const int Id = 12500;
+    private const int Id = 28600;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
     
