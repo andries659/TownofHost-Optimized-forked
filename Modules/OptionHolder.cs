@@ -891,6 +891,8 @@ public static class Options
         Cyber.SetupCustomOptions();
 
         DoubleShot.SetupCustomOption();
+        
+        Evader.SetupCustomOption();
 
         Flash.SetupCustomOption();
 
