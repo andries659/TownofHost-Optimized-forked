@@ -73,7 +73,7 @@ namespace TOHE.Roles.Neutral
 
         public override bool CanUseKillButton(PlayerControl pc) => true;
 
-        public override void UseKillButton(PlayerControl killer, PlayerControl target)
+        public void UseKillButton(PlayerControl killer, PlayerControl target)
         {
             if (!KillClickCount.ContainsKey(killer.PlayerId))
                 KillClickCount[killer.PlayerId] = 0;
