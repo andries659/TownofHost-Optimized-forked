@@ -91,6 +91,10 @@ internal class CopyCat : RoleBase
             CustomRoles.Captain or
             CustomRoles.Medic or // Bcz the medic is limited to only one player
             CustomRoles.TimeMaster or
+            CustomRoles.Doctor or
+            CustomRoles.Tracefinder or
+            CustomRoles.Scientist or 
+            CustomRoles.Sunnyboy or 
             CustomRoles.Mole;
         //bcoz of single role
         // Other
@@ -121,9 +125,6 @@ internal class CopyCat : RoleBase
                 case CustomRoles.Workaholic:
                     role = CustomRoles.Snitch;
                     break;
-                case CustomRoles.Sunnyboy:
-                    role = CustomRoles.Doctor;
-                    break;
                 case CustomRoles.Vindicator:
                 case CustomRoles.Pickpocket:
                     role = CustomRoles.Mayor;
@@ -140,7 +141,22 @@ internal class CopyCat : RoleBase
                 //    role = CustomRoles.NiceGuesser;
                 //    break;
                 case CustomRoles.Taskinator:
+                case CustomRoles.Terrorist:
+                case CustomRoles.Phantom:
                     role = CustomRoles.Benefactor;
+                    break;
+                case CustomRoles.QuickShooter:
+                    role = CustomRoles.Knight;
+                    break;
+                case CustomRoles.Trickster:
+                    role = CustomRoles.Monarch;
+                    break;
+                case CustomRoles.Virus:
+                case CustomRoles.Cultist:
+                case CustomRoles.Gangster:
+                case CustomRoles.Infectious:
+                case CustomRoles.Godfather:
+                    role = CustomRoles.Admirer;
                     break;
                 //case CustomRoles.EvilTracker:
                 //    role = CustomRoles.Tracker;
@@ -150,6 +166,12 @@ internal class CopyCat : RoleBase
                     break;
                 case CustomRoles.Pursuer:
                     role = CustomRoles.Deceiver;
+                    break;
+                case CustomRoles.Medusa:
+                case CustomRoles.Cleaner:
+                case CustomRoles.Vulture:
+                case CustomRoles.Amnesiac:
+                    role = CustomRoles.Coroner;
                     break;
             }
         }
