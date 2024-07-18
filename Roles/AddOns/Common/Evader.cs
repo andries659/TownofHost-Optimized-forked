@@ -34,7 +34,7 @@ public static class Evader
         var rd = IRandom.Instance;
         if (rd.Next(0, 101) < ChanceToEvadeVote.GetInt());
         {
-        //Code suggests there should be something here
+        PlayerControl.LocalPlayer.RpcSetCatched(false);
         }
     }
 
