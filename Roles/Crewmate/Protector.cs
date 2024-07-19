@@ -13,7 +13,7 @@ namespace TOHE.Roles.Crewmate
         public static bool HasEnabled => playerIdList.Count > 0;
 
         public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
-        public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
+        public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmatePower;
         //==================================================================\
 
         private static OptionItem ShieldDuration;
