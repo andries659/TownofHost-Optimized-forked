@@ -1,6 +1,7 @@
 using AmongUs.GameOptions;
 using static TOHE.Options;
 using static TOHE.Translator;
+using static TOHE.Utils;
 
 namespace TOHE.Roles.Neutral
 {
@@ -153,7 +154,7 @@ namespace TOHE.Roles.Neutral
             if (target != null)
             {
                 // Logic to perform the kill
-                // Example: target.Eliminate(); // Replace with actual method
+                killer.Kill(target);
                 killer.Notify($"You have killed {target.Data.PlayerName}.");
             }
         }
