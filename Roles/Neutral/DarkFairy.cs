@@ -10,7 +10,7 @@ internal class DarkFairy : RoleBase
     private const int Id = 29100;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.DarkFairy);
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralEvil;
     //==================================================================\\
 
     private static OptionItem RememberCooldown;
