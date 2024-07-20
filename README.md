@@ -30,7 +30,7 @@
 <br>
 
 **Credit to these mods and their developers for the code and help:**
-## :star: [TOH: Enhanced](https://github.com/0xDrMoe/TownofHost-Enhanced)
+## :star: [TOH: Optimized](https://github.com/0xDrMoe/TownofHost-Enhanced)
 >
 > - Town of Host: Optimized was forked from Town of Host: Enhanced.
 >
