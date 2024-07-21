@@ -100,7 +100,7 @@ namespace TOHE.Roles.Neutral
                 (CanConvertNeutral.GetBool() && pc.GetCustomRole().IsNeutral())) && !pc.Is(CustomRoles.Converted) 
                 && !pc.Is(CustomRoles.Admired) && !pc.Is(CustomRoles.Loyal) && !pc.Is(CustomRoles.Infectious) 
                 && !pc.Is(CustomRoles.Virus) && !pc.Is(CustomRoles.DarkFairy)
-                && !(pc.GetCustomSubRoles().Contains(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool()));
+                && !(pc.GetCustomSubRoles().Contains(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool());
         }
         public static bool Converted.NameRoleColor(PlayerControl seer, PlayerControl target)
         {
