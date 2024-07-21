@@ -59,13 +59,10 @@ namespace TOHE.Roles.Neutral
                 Main.ResetCamPlayerList.Add(playerId);
         }
 
-        public override void SetConvertCooldown(byte id) => Main.AllPlayerKillCooldown[id] = AbilityLimit >= 1 ? ConvertCooldown.GetFloat() + (ConvertMax.GetInt() - AbilityLimit) * ConvertCooldownIncrese.GetFloat() : 300f;
+        public override void DarkFairy.SetConvertCooldown(byte id) => Main.AllPlayerKillCooldown[id] = AbilityLimit >= 1 ? ConvertCooldown.GetFloat() + (ConvertMax.GetInt() - AbilityLimit) * ConvertCooldownIncrese.GetFloat() : 300f;
 
-        public override bool OnCheckMurderAsKiller(PlayerControl target)
+        public override bool DarkFairy.OnCheckMurderAsKiller(PlayerControl target)
         {
-            if (AbilityLimit < 1) return false;
-            if (Mini.Age < 18 && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini))) return false;
-            if (CanBeConverted(target) && (Mini.Age == 18 || (Mini.Age < 18 && !(target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))))
             {
                 AbilityLimit--;
                 SendSkillRPC();
@@ -105,8 +102,7 @@ namespace TOHE.Roles.Neutral
                 && !pc.Is(CustomRoles.Virus) && !pc.Is(CustomRoles.DarkFairy)
                 && !(pc.GetCustomSubRoles().Contains(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool()));
         }
-
-        public static bool NameRoleColor(PlayerControl seer, PlayerControl target)
+        public static bool Converted.NameRoleColor(PlayerControl seer, PlayerControl target)
         {
             if (seer.Is(CustomRoles.Converted) && target.Is(CustomRoles.DarkFairy)) return true;
             if (seer.Is(CustomRoles.DarkFairy) && target.Is(CustomRoles.Converted)) return true;
