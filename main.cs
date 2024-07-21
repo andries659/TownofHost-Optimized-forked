@@ -726,7 +726,7 @@ public enum CustomRoles
     Collector,
     Cultist, 
     CursedSoul,
-    DarkFairy
+    DarkFairy,
     Demon, 
     Doomsayer,
     Doppelganger,
