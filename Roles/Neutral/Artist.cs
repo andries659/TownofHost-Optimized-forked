@@ -45,53 +45,47 @@ namespace TOHE.Roles.Neutral
         }
 
         public override void Init()
+       public override void Add(byte playerId)
+    {
+        AbilityLimit = MaxSteals.GetInt();
+        killCooldown = KillCooldownOpt.GetFloat(); 
+
+        var pc = Utils.GetPlayerById(playerId);
+        pc?.AddDoubleTrigger();
+
+        if (!Main.ResetCamPlayerList.Contains(playerId))
+            Main.ResetCamPlayerList.Add(playerId);
+    }
+    public override void SetKillCooldown(byte id)
+    {
+        Main.AllPlayerKillCooldown[id] = killCooldown;
+    }
+    public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(true);
+    public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
+    public override bool CanUseSabotage(PlayerControl pc) => CanUsesSabotage.false();
+    public override bool CanUseKillButton(PlayerControl pc) => true;
+
+          public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
+    {
+        if (killer == null) return true;
+        if (target == null) return true;
+
+        if (PaintedList.Contains(target.PlayerId))
         {
-            PlayerSkinsPainted.Clear();
-            PlayerIds.Clear();
-            KillClickCount.Clear();
+            _ = new LateTask(() => { killer.SetKillCooldown(PaintCooldown.GetFloat()); }, 0.1f, "Artist Set Kill Cooldown");
+            return true;
         }
-
-        public override void Add(byte playerId)
+        else
         {
-            PlayerIds.Add(playerId);
-            KillClickCount[playerId] = 0;
-
-            var pc = Utils.GetPlayerById(playerId);
-            pc.AddDoubleTrigger();
-
-            if (!Main.ResetCamPlayerList.Contains(playerId))
-                Main.ResetCamPlayerList.Add(playerId);
-        }
-
-        public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
-
-        public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
-
-        public override bool CanUseKillButton(PlayerControl pc) => true;
-
-        public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
-
-        public override bool CanUseSabotage(PlayerControl pc) => false;
-
-        public override void UseKillButton(PlayerControl killer, PlayerControl target)
-        {
-            if (target == null || !PlayerIds.Contains(killer.PlayerId))
-                return;
-
-            // Increment kill click count for the killer
-            KillClickCount[killer.PlayerId]++;
-
-            // If it's the first click, paint the player
-            if (KillClickCount[killer.PlayerId] == 1)
-            {
-                SetPainting(killer, target);
+            return killer.CheckDoubleTrigger(target, () => 
+            { 
+                {
+                SetSkin(target, PaintedOutfit);
+                PlayerSkinsPainted[killer.PlayerId].Add(target.PlayerId);
             }
-            // If it's the second click, check murder as killer (which may result in a kill)
-            else if (KillClickCount[killer.PlayerId] == 2)
-            {
-                OnCheckMurderAsKiller(killer, target);
-            }
-        }
+
+            killer.Notify(ColorString(GetRoleColor(CustomRoles.Artist), GetString("ArtistPaintedSkin")));
+            target.Notify(ColorString(GetRoleColor(CustomRoles.Artist), GetString("PaintedByArtist")));
 
         public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
         {
@@ -101,25 +95,8 @@ namespace TOHE.Roles.Neutral
             }
             else
             {
-                return true; // Default behavior, can be adjusted as needed
+                return true; 
             }
-        }
-
-        private void SetPainting(PlayerControl killer, PlayerControl target)
-        {
-            if (!PlayerSkinsPainted.ContainsKey(killer.PlayerId))
-            {
-                PlayerSkinsPainted[killer.PlayerId] = new List<byte>();
-            }
-
-            if (!PlayerSkinsPainted[killer.PlayerId].Contains(target.PlayerId))
-            {
-                SetSkin(target, PaintedOutfit);
-                PlayerSkinsPainted[killer.PlayerId].Add(target.PlayerId);
-            }
-
-            killer.Notify(ColorString(GetRoleColor(CustomRoles.Artist), GetString("ArtistPaintedSkin")));
-            target.Notify(ColorString(GetRoleColor(CustomRoles.Artist), GetString("PaintedByArtist")));
         }
 
         private void SetSkin(PlayerControl target, NetworkedPlayerInfo.PlayerOutfit outfit)
