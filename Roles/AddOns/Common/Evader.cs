@@ -32,9 +32,10 @@ public static class Evader
     private static void EvadeChance()
     {
         var rd = IRandom.Instance;
-        if (rd.Next(0, 101) < ChanceToEvadeVote.GetInt());
+        if (rd.Next(0, 101) < ChanceToEvadeVote.GetInt())
         {
-        PlayerControl.LocalPlayer.RpcSetCatched(false);
+            var evader = PlayerControl.LocalPlayer;
+            Evade[evader.PlayerId] = true;
         }
     }
 
