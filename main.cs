@@ -726,6 +726,7 @@ public enum CustomRoles
     Collector,
     Cultist, 
     CursedSoul,
+    DarkFairy
     Demon, 
     Doomsayer,
     Doppelganger,
@@ -942,6 +943,7 @@ public enum CustomWinner
     NiceMini = CustomRoles.Mini,
     Doppelganger = CustomRoles.Doppelganger,
     Solsticer = CustomRoles.Solsticer,
+    DarkFairy = CustomRoles.DarkFairy,
 }
 public enum AdditionalWinners
 {
