@@ -42,9 +42,11 @@ public static class Evader
     public static void CheckRealVotes(PlayerControl target, ref int VoteNum)
 
     {
+        EvadeChance()
         if (Evade[target.PlayerId])
         {
             Evade[target.PlayerId] = false;
+            VoteNum = 0;
             return false;
         }
 
