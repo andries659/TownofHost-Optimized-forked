@@ -16,14 +16,14 @@ internal class DarkFairy : RoleBase
 
     private static OptionItem RememberCooldown;
     private static OptionItem TaskCharmCooldown;
-    private static Optionitem CanVent
+    private static OptionItem CanVent;
 
     public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.DarkFairy);
         RememberCooldown = FloatOptionItem.Create(Id + 10, "RememberCooldown", new(0f, 180f, 2.5f), 25f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.DarkFairy])
                 .SetValueFormat(OptionFormat.Seconds);
-        TaskCharmCooldown = FloatOptionItem.Create(Id + 10, GeneralOption.TaskCharmCooldown, new(0f, 180f, 2.5f), 20f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.DarkFairy])
+        TaskCharmCooldown = FloatOptionItem.Create(Id + 10, "TaskCharmCooldown", (0f, 180f, 2.5f), 20f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.DarkFairy])
             .SetValueFormat(OptionFormat.Seconds);
         CanVent = BooleanOptionItem.Create(Id + 11, GeneralOption.CanVent, true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.DarkFairy]);
     }
