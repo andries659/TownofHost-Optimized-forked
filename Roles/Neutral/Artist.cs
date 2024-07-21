@@ -44,60 +44,63 @@ namespace TOHE.Roles.Neutral
                 .SetParent(CustomRoleSpawnChances[CustomRoles.Artist]);
         }
 
-        public override void Init()
-       public override void Add(byte playerId)
+    public override void Init()
     {
-        AbilityLimit = MaxSteals.GetInt();
-        killCooldown = KillCooldownOpt.GetFloat(); 
+        PaintingTarget.Clear();
+    }
+    public override void Add(byte playerId)
+    {
+        AbilityLimit = PaintingMaxCount.GetInt();
+        PaintingTarget.TryAdd(playerId, []);
 
         var pc = Utils.GetPlayerById(playerId);
         pc?.AddDoubleTrigger();
 
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
-    }
-    public override void SetKillCooldown(byte id)
-    {
-        Main.AllPlayerKillCooldown[id] = killCooldown;
-    }
-    public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(true);
-    public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
-    public override bool CanUseSabotage(PlayerControl pc) => CanUsesSabotage.false();
+
+    public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
     public override bool CanUseKillButton(PlayerControl pc) => true;
+    public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
+    public override bool CanUseSabotage(PlayerControl pc) => false;
 
-          public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
+    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (killer == null) return true;
-        if (target == null) return true;
-
-        if (PaintedList.Contains(target.PlayerId))
+        if (AbilityLimit > 0)
         {
-            _ = new LateTask(() => { killer.SetKillCooldown(PaintCooldown.GetFloat()); }, 0.1f, "Artist Set Kill Cooldown");
+            return killer.CheckDoubleTrigger(target, () => { SetPainting(killer, target); });
+        }
+        else return true;
+    }
+
+    public static bool IsPainting(byte seer, byte target)
+    {
+        if (PaintingTarget[seer].Contains(target))
+        {
             return true;
         }
-        else
+        return false;
+    }
+    private void SetPainting(PlayerControl killer, PlayerControl target)
+    {
+        if (!IsPainting(killer.PlayerId, target.PlayerId))
         {
-            return killer.CheckDoubleTrigger(target, () => 
-            { 
-                {
-                SetSkin(target, PaintedOutfit);
-                PlayerSkinsPainted[killer.PlayerId].Add(target.PlayerId);
-            }
+            AbilityLimit--;
+            SetSkin(target, PaintedOutfit);
+            PlayerSkinsPainted[killer.PlayerId].Add(target.PlayerId);
+            
 
             killer.Notify(ColorString(GetRoleColor(CustomRoles.Artist), GetString("ArtistPaintedSkin")));
             target.Notify(ColorString(GetRoleColor(CustomRoles.Artist), GetString("PaintedByArtist")));
+        
 
-        public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
-        {
-            if (AbilityLimit > 0)
-            {
-                return killer.CheckDoubleTrigger(target, () => { SetPainting(killer, target); });
-            }
-            else
-            {
-                return true; 
-            }
+            Utils.NotifyRoles(SpecifySeer: killer);
+            SendRPC(killer.PlayerId, target.PlayerId);
+
+            killer.SetKillCooldown();
         }
+    }
 
         private void SetSkin(PlayerControl target, NetworkedPlayerInfo.PlayerOutfit outfit)
         {
@@ -149,3 +152,10 @@ namespace TOHE.Roles.Neutral
         }
     }
 }
+
+
+
+
+
+
+   
