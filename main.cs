@@ -817,6 +817,7 @@ public enum CustomRoles
     Cleansed,
     Clumsy,
     Contagious,
+    Converted,
     Cyber,
     Unreportable, //disregarded
     Diseased,
