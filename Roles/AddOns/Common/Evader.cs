@@ -42,12 +42,12 @@ public static class Evader
     public static void CheckRealVotes(PlayerControl target, ref int VoteNum)
 
     {
-        EvadeChance();
+        if (Evade[target.PlayerId])
         {
-            if (target.Is(CustomRoles.Evader))
-            {
-                VoteNum = 0;
-            }
+            Evade[target.PlayerId] = false;
+            return false;
         }
+
+        return true;
     }
 }
