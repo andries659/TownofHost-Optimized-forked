@@ -24,6 +24,7 @@ namespace TOHE.Roles.Neutral
         private static OptionItem PaintCooldown;
         private static OptionItem CanVent;
         private static OptionItem HasImpostorVision;
+        private static OptionItem AbilityUses;
 
         private static readonly Dictionary<byte, float> NowCooldown = new();
         private static readonly Dictionary<byte, List<byte>> PlayerSkinsPainted = new();
@@ -47,13 +48,7 @@ namespace TOHE.Roles.Neutral
         }
 
 
-        public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
-        public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
-        public override bool CanUseKillButton(PlayerControl pc) => true;
-        public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
-        public override bool CanUseSabotage(PlayerControl pc) => false;
-
-
+        
         public override void Init()
         {
             PlayerSkinsPainted.Clear();
@@ -74,31 +69,31 @@ namespace TOHE.Roles.Neutral
                 Main.ResetCamPlayerList.Add(playerId);
         }
 
-        public override void SetKillCooldown(byte id) 
-            => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
+         private void SendRPC(byte playerId, byte targetId)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WriteNetObject(_Player);
+        writer.Write(playerId);
+        writer.Write(AbilityLimit);
+        writer.Write(targetId);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
 
-        public override void ApplyGameOptions(IGameOptions opt, byte id) 
-            => opt.SetVision(HasImpostorVision.GetBool());
-
+        public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
+        public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
         public override bool CanUseKillButton(PlayerControl pc) => true;
-
+        public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
+        public override bool CanUseSabotage(PlayerControl pc) => false;
         public void UseKillButton(PlayerControl killer, PlayerControl target)
         {
-            if (!KillClickCount.ContainsKey(killer.PlayerId))
-                KillClickCount[killer.PlayerId] = 0;
 
-            KillClickCount[killer.PlayerId]++;
-
-            if (KillClickCount[killer.PlayerId] == 1)
-            {
-                SetPainting(killer, target);
-                killer.Notify("You painted " + target.Data.PlayerName + " grey!");
-            }
-            else if (KillClickCount[killer.PlayerId] == 2)
-            {
-                KillClickCount[killer.PlayerId] = 0;
-                killer.Kill(target); 
-                killer.Notify("You killed " + target.Data.PlayerName + "!");
+       public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
+    {
+        if (AbilityLimit > 0)
+        {
+            return killer.CheckDoubleTrigger(target, () => { SetPainting(killer, target); });
+        }
+        else return true;
             }
         }
 
