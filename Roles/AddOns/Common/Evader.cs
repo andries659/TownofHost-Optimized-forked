@@ -35,17 +35,20 @@ public static class Evader
         if (rd.Next(0, 101) < ChanceToEvadeVote.GetInt())
         {
             var evader = PlayerControl.LocalPlayer;
+            VoteNum = 0;
             Evade[evader.PlayerId] = true;
         }
     }
 
-    public static void CheckRealVotes(PlayerControl target, ref int VoteNum)
+    public static bool CheckRealVotes(PlayerControl target, ref int VoteNum)
 
     {
         EvadeChance()
         if (Evade[target.PlayerId])
         {
-            VoteNum = 0;
+            Evade[target.PlayerId] = false;
+            return false;
         }
+        return true;
     }
 }
