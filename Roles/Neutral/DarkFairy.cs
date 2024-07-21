@@ -1,3 +1,4 @@
+using AmongUs.GameOptions;
 using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -15,14 +16,16 @@ internal class DarkFairy : RoleBase
 
     private static OptionItem RememberCooldown;
     private static OptionItem TaskCharmCooldown;
+    private static Optionitem CanVent
 
     public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.DarkFairy);
-        TaskCharmCooldown = FloatOptionItem.Create(Id + 10, GeneralOption.TaskCharmCooldown, new(0f, 180f, 2.5f), 20f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.DarkFairy])
-            .SetValueFormat(OptionFormat.Seconds);
         RememberCooldown = FloatOptionItem.Create(Id + 10, "RememberCooldown", new(0f, 180f, 2.5f), 25f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.DarkFairy])
                 .SetValueFormat(OptionFormat.Seconds);
+        TaskCharmCooldown = FloatOptionItem.Create(Id + 10, GeneralOption.TaskCharmCooldown, new(0f, 180f, 2.5f), 20f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.DarkFairy])
+            .SetValueFormat(OptionFormat.Seconds);
+        CanVent = BooleanOptionItem.Create(Id + 11, GeneralOption.CanVent, true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.DarkFairy]);
     }
     public override void Add(byte playerId)
     {
@@ -53,44 +56,12 @@ internal class DarkFairy : RoleBase
             killer.GetRoleClass().OnAdd(killer.PlayerId);
 
             if (role.IsCrewmate())
-                killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedCrewmate")));
+                killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.DarkFairy), GetString("RememberedCrewmate")));
             else
-                killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedNeutralKiller")));
+                killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.DarkFairy), GetString("RememberedNeutralKiller")));
 
             // Notify target
-            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatorImitated")));
-        }
-        else if (role.IsAmneMaverick())
-        {
-            AbilityLimit--;
-            SendSkillRPC();
-            switch (IncompatibleNeutralMode.GetInt())
-            {
-                case 0:
-                    killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedImitator")));
-                    break;
-                case 1:
-                    killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedPursuer")));
-                    killer.RpcSetCustomRole(CustomRoles.Pursuer);
-                    killer.GetRoleClass().OnAdd(killer.PlayerId);
-                    break;
-                case 2:
-                    killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedFollower")));
-                    killer.RpcSetCustomRole(CustomRoles.Follower);
-                    killer.GetRoleClass().OnAdd(killer.PlayerId);
-                    break;
-                case 3:
-                    killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedMaverick")));
-                    killer.RpcSetCustomRole(CustomRoles.Maverick);
-                    killer.GetRoleClass().OnAdd(killer.PlayerId);
-                    break;
-                case 4: //....................................................................................x100
-                    killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedAmnesiac")));
-                    killer.RpcSetCustomRole(CustomRoles.Amnesiac);
-                    killer.GetRoleClass().OnAdd(killer.PlayerId);
-                    break;
-            }
-
+            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.DarkFairy), GetString("ImitatorImitated")));
         }
         else if (role.IsCrewmate())
         {
@@ -98,21 +69,21 @@ internal class DarkFairy : RoleBase
             SendSkillRPC();
             killer.RpcSetCustomRole(CustomRoles.Sheriff);
             killer.GetRoleClass().OnAdd(killer.PlayerId);
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedCrewmate")));
-            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatorImitated")));
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.DarkFairy), GetString("RememberedCrewmate")));
+            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.DarkFairy), GetString("ImitatorImitated")));
         }
         else if (role.IsImpostor())
         {
             AbilityLimit--;
             SendSkillRPC();
             killer.RpcSetCustomRole(CustomRoles.Refugee);
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedImpostor")));
-            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatorImitated")));
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.DarkFairy), GetString("RememberedImpostor")));
+            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.DarkFairy), GetString("ImitatorImitated")));
         }
 
         var killerRole = killer.GetCustomRole();
 
-        if (killerRole != CustomRoles.Imitator)
+        if (killerRole != CustomRoles.DarkFairy)
         {
             killer.ResetKillCooldown();
             killer.SetKillCooldown(forceAnime: true);
@@ -122,10 +93,10 @@ internal class DarkFairy : RoleBase
 
             Utils.NotifyRoles(SpecifySeer: killer);
         }
-        else if (killerRole == CustomRoles.Imitator)
+        else if (killerRole == CustomRoles.DarkFairy)
         {
             killer.SetKillCooldown(forceAnime: true);
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatorInvalidTarget")));
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.DarkFairy), GetString("ImitatorInvalidTarget")));
         }
 
         return false;
