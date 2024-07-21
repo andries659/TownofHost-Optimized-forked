@@ -22,7 +22,7 @@ internal class DarkFairy : RoleBase
     private static OptionItem CanConvertNeutral;
     public static OptionItem ConvertedCountMode;
 
-    private enum CharmedCountModeSelectList
+    private enum ConvertedCountModeSelectList
     {
         DarkFairy_ConvertedCountMode_None,
         DarkFairy_ConvertedCountMode_DarkFairy,
@@ -40,7 +40,7 @@ internal class DarkFairy : RoleBase
             .SetValueFormat(OptionFormat.Times);
         KnowTargetRole = BooleanOptionItem.Create(Id + 13, "DarkFairyKnowTargetRole", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.DarkFairy]);
         FairiesKnowEachOther = BooleanOptionItem.Create(Id + 14, "DarkFairyFairiesKnowEachOther", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.DarkFairy]);
-        ConvertedCountMode = StringOptionItem.Create(Id + 17, "DarkFairy_CharmedCountMode", EnumHelper.GetAllNames<CharmedCountModeSelectList>(), 1, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.DarkFairy]);
+        ConvertedCountMode = StringOptionItem.Create(Id + 17, "DarkFairy_CharmedCountMode", EnumHelper.GetAllNames<ConvertedCountModeSelectList>(), 1, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.DarkFairy]);
         CanConvertNeutral = BooleanOptionItem.Create(Id + 18, "DarkFairyCanCharmNeutral", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.DarkFairy]);
     }
     public override void Add(byte playerId)
@@ -63,55 +63,37 @@ internal class DarkFairy : RoleBase
 
             target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.DarkFairy), GetString("ConvertedByDarkFairy")));
             
-            Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
-            Utils.NotifyRoles(SpecifySeer: target, SpecifyTarget: killer, ForceLoop: true);
-
-            killer.ResetKillCooldown();
-            killer.SetKillCooldown();
-            if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
-            target.RpcGuardAndKill(killer);
             target.RpcGuardAndKill(target);
 
-            Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Charmed.ToString(), "Assign " + CustomRoles.Charmed.ToString());
-            Logger.Info($"{killer.GetNameWithRole()} : 剩余{AbilityLimit}次魅惑机会", "Cultist");
-            return false;
-        }
-        killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CultistInvalidTarget")));
-        Logger.Info($"{killer.GetNameWithRole()} : 剩余{AbilityLimit}次魅惑机会", "Cultist");
-        return false;
+            Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Converted.ToString(), "Assign " + CustomRoles.Converted.ToString());
     }
-    public static bool TargetKnowOtherTargets => TargetKnowOtherTarget.GetBool();
+    public static bool FairiesKnowEachOther => FairiesKnowEachOther.GetBool();
     public static bool KnowRole(PlayerControl player, PlayerControl target)
     {
-        if (player.Is(CustomRoles.Charmed) && target.Is(CustomRoles.Cultist)) return true;
+        if (player.Is(CustomRoles.Converted) && target.Is(CustomRoles.DarkFairy)) return true;
 
         if (KnowTargetRole.GetBool())
         {
-            if (player.Is(CustomRoles.Cultist) && target.Is(CustomRoles.Charmed)) return true;
-            if (TargetKnowOtherTarget.GetBool() && player.Is(CustomRoles.Charmed) && target.Is(CustomRoles.Charmed)) return true;
+            if (player.Is(CustomRoles.DarkFairy) && target.Is(CustomRoles.Converted)) return true;
+            if (FairiesKnowEachOther.GetBool() && player.Is(CustomRoles.Converted) && target.Is(CustomRoles.Converted)) return true;
         }
         return false;
     }
-    public override string GetProgressText(byte playerid, bool cooms) => Utils.ColorString(AbilityLimit >= 1 ? Utils.GetRoleColor(CustomRoles.Cultist).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
-    public static bool CanBeCharmed(PlayerControl pc)
+    public override string GetProgressText(byte playerid, bool cooms) => Utils.ColorString(AbilityLimit >= 1 ? Utils.GetRoleColor(CustomRoles.DarkFairy).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
+    public static bool CanBeConverted(PlayerControl pc)
     {
         return pc != null && (pc.GetCustomRole().IsCrewmate() || pc.GetCustomRole().IsImpostor() || 
-            (CanCharmNeutral.GetBool() && pc.GetCustomRole().IsNeutral())) && !pc.Is(CustomRoles.Charmed) 
+            (CanCharmNeutral.GetBool() && pc.GetCustomRole().IsNeutral())) && !pc.Is(CustomRoles.Converted) 
             && !pc.Is(CustomRoles.Admired) && !pc.Is(CustomRoles.Loyal) && !pc.Is(CustomRoles.Infectious) 
-            && !pc.Is(CustomRoles.Virus) && !pc.Is(CustomRoles.Cultist)
+            && !pc.Is(CustomRoles.Virus) && !pc.Is(CustomRoles.DarkFairy)
             && !(pc.GetCustomSubRoles().Contains(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool());
     }
     public static bool NameRoleColor(PlayerControl seer, PlayerControl target)
     {
-        if (seer.Is(CustomRoles.Charmed) && target.Is(CustomRoles.Cultist)) return true;
-        if (seer.Is(CustomRoles.Cultist) && target.Is(CustomRoles.Charmed)) return true;
-        if (seer.Is(CustomRoles.Charmed) && target.Is(CustomRoles.Charmed) && TargetKnowOtherTarget.GetBool()) return true;
+        if (seer.Is(CustomRoles.Converted) && target.Is(CustomRoles.DarkFairy)) return true;
+        if (seer.Is(CustomRoles.DarkFairy) && target.Is(CustomRoles.Converted)) return true;
+        if (seer.Is(CustomRoles.Converted) && target.Is(CustomRoles.Converted) && FairiesKnowEachOther.GetBool()) return true;
         
         return false;
     }
-    public override void SetAbilityButtonText(HudManager hud, byte playerId)
-    {
-        hud.KillButton.OverrideText(GetString("CultistKillButtonText"));
-    }
-    public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Subbus");
 }
