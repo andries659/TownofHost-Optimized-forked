@@ -45,11 +45,7 @@ public static class Evader
         EvadeChance()
         if (Evade[target.PlayerId])
         {
-            Evade[target.PlayerId] = false;
             VoteNum = 0;
-            return false;
         }
-
-        return true;
     }
 }
