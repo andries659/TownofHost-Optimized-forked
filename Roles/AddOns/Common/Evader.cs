@@ -55,5 +55,4 @@ public static class Evader
             }
             return true;
         }
-    }
 }
