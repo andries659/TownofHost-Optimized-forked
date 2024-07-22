@@ -15,104 +15,128 @@ internal class DarkFairy : RoleBase
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralEvil;
     //==================================================================\\
+    public override bool HasTasks(NetworkedPlayerInfo player, CustomRoles role, bool ForRecompute) => !ForRecompute;
 
-    private static OptionItem ConvertCooldown;
-    private static OptionItem ConvertCooldownIncrese;
-    private static OptionItem ConvertMax;
-    private static OptionItem KnowTargetRole;
-    private static OptionItem FairiesKnowEachOther;
-    private static OptionItem CanConvertNeutral;
-    public static OptionItem ConvertedCountMode;
+    private static OptionItem TaskMarkPerRoundOpt;
 
-    private enum ConvertedCountModeSelectList
-    {
-        DarkFairy_ConvertedCountMode_None,
-        DarkFairy_ConvertedCountMode_DarkFairy,
-        DarkFairy_ConvertedCountMode_Original
-    }
+    private static readonly Dictionary<byte, List<int>> taskIndex = [];
+    private static readonly Dictionary<byte, int> TaskMarkPerRound = [];
+    
+    private static int maxTasksMarkedPerRound = new();
 
     public override void SetupCustomOption()
     {
-        SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.DarkFairy, 1, zeroOne: false);
-        ConvertCooldown = FloatOptionItem.Create(Id + 10, "DarkFairyCharmCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.DarkFairy])
-             .SetValueFormat(OptionFormat.Seconds);
-        ConvertCooldownIncrese = FloatOptionItem.Create(Id + 11, "DarkFairyCharmCooldownIncrese", new(0f, 180f, 2.5f), 10f, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.DarkFairy])
-            .SetValueFormat(OptionFormat.Seconds);
-        ConvertMax = IntegerOptionItem.Create(Id + 12, "DarkFairyCharmMax", new(1, 15, 1), 15, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.DarkFairy])
-            .SetValueFormat(OptionFormat.Times);
-        KnowTargetRole = BooleanOptionItem.Create(Id + 13, "DarkFairyKnowTargetRole", true, TabGroup.NeutralRoles, false)
-             .SetParent(CustomRoleSpawnChances[CustomRoles.DarkFairy]);
-         FairiesKnowEachOther = BooleanOptionItem.Create(Id + 14, "DarkFairyFairiesKnowEachOther", true, TabGroup.NeutralRoles, false)
-             .SetParent(CustomRoleSpawnChances[CustomRoles.DarkFairy]);
-         ConvertedCountMode = StringOptionItem.Create(Id + 17, "DarkFairy_CharmedCountMode", EnumHelper.GetAllNames<ConvertedCountModeSelectList>(), 1, TabGroup.NeutralRoles, false)
-             .SetParent(CustomRoleSpawnChances[CustomRoles.DarkFairy]);
-         CanConvertNeutral = BooleanOptionItem.Create(Id + 18, "DarkFairyCanCharmNeutral", false, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.DarkFairy]);
+        Options.SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Taskinator);
+        TaskMarkPerRoundOpt = IntegerOptionItem.Create(Id + 10, "TasksMarkPerRound", new(1, 14, 1), 3, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Taskinator])
+            .SetValueFormat(OptionFormat.Votes);
+        Options.OverrideTasksData.Create(Id + 11, TabGroup.NeutralRoles, CustomRoles.Taskinator);
     }
 
+    public override void Init()
+    {
+        taskIndex.Clear(); 
+        TaskMarkPerRound.Clear();
+        maxTasksMarkedPerRound = TaskMarkPerRoundOpt.GetInt();
+    }
     public override void Add(byte playerId)
     {
-        AbilityLimit = ConvertMax.GetInt();
-
-         if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
+        TaskMarkPerRound[playerId] = 0;
     }
 
-    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = AbilityLimit >= 1 ? ConvertCooldown.GetFloat() + (ConvertMax.GetInt() - AbilityLimit) * ConvertCooldownIncrese.GetFloat() : 300f;
-    // I set ConvertCooldown back to KillCooldown, because both function the same way at this state -Ape
-
-    public override bool OnCheckMurderAsKiller(PlayerControl killer,PlayerControl target)
+    private void SendRPC(byte taskinatorID, int taskIndex = -1, bool isKill = false, bool clearAll = false)
     {
-        {
-            AbilityLimit--;
-            SendSkillRPC();
-            target.RpcSetCustomRole(CustomRoles.Converted);
-
-            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.DarkFairy), GetString("ConvertedByDarkFairy")));
-                
-            target.RpcGuardAndKill(target);
-
-            Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Converted.ToString(), "Assign " + CustomRoles.Converted.ToString());
-            return true; // Missing return statement
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WriteNetObject(_Player); //TaskinatorMarkedTask
+        writer.Write(taskinatorID);
+        writer.Write(taskIndex);
+        writer.Write(isKill);
+        writer.Write(clearAll);
+        if (!isKill)
+        {            
+            writer.Write(TaskMarkPerRound[taskinatorID]);   
         }
-        return false; // Missing return statement 
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-
-    public static bool FairiesKnowEachOtherFunc => FairiesKnowEachOther.GetBool(); // Function name conflict resolution
-
-    public static bool KnowRole(PlayerControl player, PlayerControl target)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
-        if (player.Is(CustomRoles.Converted) && target.Is(CustomRoles.DarkFairy)) return true;
-
-        if (KnowTargetRole.GetBool())
+        byte taskinatorID = reader.ReadByte();
+        int taskInd = reader.ReadInt32();
+        bool isKill = reader.ReadBoolean();
+        bool clearAll = reader.ReadBoolean();
+        if (!isKill)
         {
-             if (player.Is(CustomRoles.DarkFairy) && target.Is(CustomRoles.Converted)) return true;
-            if (FairiesKnowEachOtherFunc && player.Is(CustomRoles.Converted) && target.Is(CustomRoles.Converted)) return true;
+            int uses = reader.ReadInt32();
+            TaskMarkPerRound[taskinatorID] = uses;
+            if (!clearAll) 
+            { 
+                if (!taskIndex.ContainsKey(taskinatorID)) taskIndex[taskinatorID] = [];
+                taskIndex[taskinatorID].Add(taskInd);
+            }
         }
-        return false;
+        else
+        {
+            if (taskIndex.ContainsKey(taskinatorID)) taskIndex[taskinatorID].Remove(taskInd);
+        }
+        if (clearAll && taskIndex.ContainsKey(taskinatorID)) taskIndex[taskinatorID].Clear(); 
     }
 
-    public override string GetProgressText(byte playerId, bool cooms) => Utils.ColorString(AbilityLimit >= 1 ? Utils.GetRoleColor(CustomRoles.DarkFairy).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
-
-    public static bool CanBeConverted(PlayerControl pc)
+    public override string GetProgressText(byte playerId, bool cooms)
     {
-         return pc != null && (pc.GetCustomRole().IsCrewmate() || pc.GetCustomRole().IsImpostor() || 
-             (CanConvertNeutral.GetBool() && pc.GetCustomRole().IsNeutral())) && !pc.Is(CustomRoles.Converted) 
-             && !pc.Is(CustomRoles.Admired) && !pc.Is(CustomRoles.Loyal) && !pc.Is(CustomRoles.Infectious) 
-             && !pc.Is(CustomRoles.Virus) && !pc.Is(CustomRoles.DarkFairy)
-             && !(pc.GetCustomSubRoles().Contains(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool());
+        if (!TaskMarkPerRound.ContainsKey(playerId)) TaskMarkPerRound[playerId] = 0;
+        int markedTasks = TaskMarkPerRound[playerId];
+        int x = Math.Max(maxTasksMarkedPerRound - markedTasks, 0);
+        return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Taskinator).ShadeColor(0.25f), $"({x})");
     }
-    public static bool NameRoleColor(PlayerControl seer, PlayerControl target)
+
+    public override void AfterMeetingTasks()
     {
-        if (seer.Is(CustomRoles.Converted) && target.Is(CustomRoles.DarkFairy)) return true;
-        if (seer.Is(CustomRoles.DarkFairy) && target.Is(CustomRoles.Converted)) return true;
-        if (seer.Is(CustomRoles.Converted) && target.Is(CustomRoles.Converted) && FairiesKnowEachOtherFunc) return true;
-            
-        return false;
-        
+        foreach (var playerId in TaskMarkPerRound.Keys)
+        {
+            TaskMarkPerRound[playerId] = 0;
+            if (taskIndex.ContainsKey(playerId)) taskIndex[playerId].Clear();
+            SendRPC(playerId, clearAll: true);
+        }
+    }
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId)
+    {
+        AURoleOptions.EngineerCooldown = 1f;
+        AURoleOptions.EngineerInVentMaxTime = 0f;
+    }
+    public override void OnOthersTaskComplete(PlayerControl player, PlayerTask task)
+    {
+        if (player == null || _Player == null) return;
+        if (!player.IsAlive()) return;
+        byte playerId = player.PlayerId;
+
+        if (player.Is(CustomRoles.Taskinator))
+        {
+            if (!TaskMarkPerRound.ContainsKey(playerId)) TaskMarkPerRound[playerId] = 0;
+            if (TaskMarkPerRound[playerId] >= maxTasksMarkedPerRound)
+            {
+                TaskMarkPerRound[playerId] = maxTasksMarkedPerRound;
+                Logger.Info($"Max task per round ({TaskMarkPerRound[playerId]}) reached for {player.GetNameWithRole()}", "Taskinator");
+                return;
+            }
+            TaskMarkPerRound[playerId]++;
+            if (!taskIndex.ContainsKey(playerId)) taskIndex[playerId] = [];
+            taskIndex[playerId].Add(task.Index);
+            SendRPC(taskinatorID: playerId, taskIndex: task.Index);
+            player.Notify(GetString("TaskinatorBombPlanted"));
+        }
+        else if (_Player.RpcCheckAndMurder(player, true))
+        {
+            foreach (var taskinatorId in taskIndex.Keys)
+            { 
+                if (taskIndex[taskinatorId].Contains(task.Index))
+                {
+                    
+                    player.RpcSetCustomRole(CustomRoles.Converted);
+
+                    taskIndex[taskinatorId].Remove(task.Index);
+                    SendRPC(taskinatorID : taskinatorId, taskIndex:task.Index, isKill : true);
+                    Logger.Info($"{player.GetAllRoleName()} was charmed by the dark fairy", "Dark Fairy");
+                }
+            }
+        }
     }
 }
-
