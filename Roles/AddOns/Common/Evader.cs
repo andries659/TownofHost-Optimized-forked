@@ -38,18 +38,22 @@ public static class Evader
             Evade[evader.PlayerId] = true;
         }
     }
-
-    public static bool CheckRealVotes(PlayerControl target, ref int VoteNum)
-
-    {
-        EvadeChance();
-        if (Evade[target.PlayerId])
+    public static void EvadeVote(byte playerId)
         {
-            Evade[target.PlayerId] = false;
-
-            VoteNum = 0;
-            return false;
+            Evade[playerId] = true;
         }
-        return true;
+
+    
+    public static bool CheckRealVotes(PlayerControl target, ref int VoteNum)
+        {
+            EvadeChance();
+            if (Evade.ContainsKey(target.PlayerId) && Evade[target.PlayerId])
+            {
+                Evade[target.PlayerId] = false;
+                VoteNum = 0;
+                return false;
+            }
+            return true;
+        }
     }
 }
