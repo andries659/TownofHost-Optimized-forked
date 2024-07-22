@@ -26,7 +26,7 @@ public static class Evader
     }
     public static void Init()
     {
-        Evade = [];
+        Evade = new Dictionary<byte, bool>();
     }
 
     private static void EvadeChance()
