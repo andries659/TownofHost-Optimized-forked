@@ -700,8 +700,9 @@ static class ExtendedMeetingHud
                 {
                     // Remove all votes for Zombie
                     Zombie.CheckRealVotes(target, ref VoteNum);
-                    
-                    //Solsticer can not get voted out
+                    // Evader chance
+                    Evader.CheckRealVotes(target, ref VoteNum);
+                    // Solsticer can not get voted out
                     if (target.Is(CustomRoles.Solsticer)) VoteNum = 0;
 
                     // Check Tiebreaker voting
