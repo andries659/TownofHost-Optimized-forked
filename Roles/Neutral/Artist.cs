@@ -55,7 +55,7 @@ namespace TOHE.Roles.Neutral
 
         var pc = Utils.GetPlayerById(playerId);
         pc?.AddDoubleTrigger();
-
+    }
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
 
