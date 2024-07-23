@@ -593,6 +593,7 @@ public enum CustomRoles
     EvilMini,
     EvilTracker,
     Fireworker,
+    Fury,
     Gangster,
     Godfather,
     Greedy,
