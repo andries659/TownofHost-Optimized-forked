@@ -977,7 +977,7 @@
   "DollMasterInfoLong": "(Impostor):\nAs the Dollmaster, you can temporarily take control of any player by using the <color=#ff0000>Shapeshift</color> button and to make them do your Deeds!",
   "EvaderInfoLong": "\nWhen the Evader is voted out, there is a chance the Evader will not be ejected.",
   "DarkFairyInfoLong": "(Neutral Evil):\nAs the Dark Fairy, you can charm tasks to charm other players. Other Dark Fairies can know each other, depending on the settings set by the host.",
-  "FuryInfoLong": "(Impostor):\nAs the Fury, use your shapeshift button to enter Rage Mode.\n This mode alters speed and kill cooldown for a set duration of time. Additionally there is a setting to reveal when the Fury enters Rage Mode.\n Outside of Rage Mode you act like a regular Impostor.",
+  "FuryInfoLong": "(Impostor):\nAs the Fury, shapeshift to enter Rage Mode.\nRage mode changes the Fury their speed and kill cooldown for a set duration of time.\n\nAdditionally there is a setting to reveal when the Fury enters Rage Mode to everyone.\nWithout the use of Rage Mode, the Fury acts like a regular Impostor.",
   "ShowTextOverlay": "Text Overlay",
   "Overlay.GuesserMode": "<size=50%>Guesser Mode</size>",
   "Overlay.NoGameEnd": "<size=50%>No Game End</size>",
