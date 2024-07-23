@@ -52,12 +52,15 @@ internal class Fury : RoleBase
         AURoleOptions.ShapeshifterCooldown = AbilityCooldown.GetFloat();
         AURoleOptions.ShapeshifterDuration = 1f;
     }
-    public override bool OnCheckShapeshift(PlayerControl player, PlayerControl seer, ref bool resetCooldown, ref bool shouldAnimate)
+    public override bool OnCheckShapeshift(PlayerControl player, PlayerControl targetSS, ref bool resetCooldown, ref bool shouldAnimate)
     {
         player.SetKillCooldown(RageKillCooldown.GetFloat());
         player.Notify(GetString("FuryInRage"), RageDuration.GetFloat());
-        if (NotifyRageActive.GetBool()) seer.KillFlash();
-        if (NotifyRageActive.GetBool()) seer.Notify(GetString("SeerFuryInRage"), 5f);
+        foreach (var target in Main.AllPlayerControls)
+        {
+            if (NotifyRageActive.GetBool()) target.KillFlash();
+            if (NotifyRageActive.GetBool()) target.Notify(GetString("SeerFuryInRage"), 5f);
+        }
         player.MarkDirtySettings();
         var tmpSpeed = Main.AllPlayerSpeed[player.PlayerId];
         Main.AllPlayerSpeed[player.PlayerId] = SpeedInRage.GetFloat();
