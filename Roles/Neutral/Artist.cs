@@ -55,10 +55,10 @@ namespace TOHE.Roles.Neutral
 
         var pc = Utils.GetPlayerById(playerId);
         pc?.AddDoubleTrigger();
-    }
+    
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
-
+    }
     public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
     public override bool CanUseKillButton(PlayerControl pc) => true;
