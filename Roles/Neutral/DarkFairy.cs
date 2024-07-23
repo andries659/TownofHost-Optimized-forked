@@ -4,6 +4,8 @@ using TOHE.Roles.Core;
 using TOHE.Roles.Double;
 using UnityEngine;
 using Hazel;
+using InnerNet;
+using System;
 using static TOHE.Options;
 using static TOHE.Translator;
 
