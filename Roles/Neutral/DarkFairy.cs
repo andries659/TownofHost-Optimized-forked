@@ -29,10 +29,10 @@ internal class DarkFairy : RoleBase
 
     public override void SetupCustomOption()
     {
-        Options.SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Taskinator);
-        TaskMarkPerRoundOpt = IntegerOptionItem.Create(Id + 10, "TasksMarkPerRound", new(1, 14, 1), 3, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Taskinator])
+        Options.SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.DarkFairy);
+        TaskMarkPerRoundOpt = IntegerOptionItem.Create(Id + 10, "TasksMarkPerRound", new(1, 14, 1), 3, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.DarkFairy])
             .SetValueFormat(OptionFormat.Votes);
-        Options.OverrideTasksData.Create(Id + 11, TabGroup.NeutralRoles, CustomRoles.Taskinator);
+        Options.OverrideTasksData.Create(Id + 11, TabGroup.NeutralRoles, CustomRoles.DarkFairy);
     }
 
     public override void Init()
@@ -49,7 +49,7 @@ internal class DarkFairy : RoleBase
     private void SendRPC(byte taskinatorID, int taskIndex = -1, bool isKill = false, bool clearAll = false)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WriteNetObject(_Player); //TaskinatorMarkedTask
+        writer.WriteNetObject(_Player); //DarkFairyMarkedTask
         writer.Write(taskinatorID);
         writer.Write(taskIndex);
         writer.Write(isKill);
@@ -88,7 +88,7 @@ internal class DarkFairy : RoleBase
         if (!TaskMarkPerRound.ContainsKey(playerId)) TaskMarkPerRound[playerId] = 0;
         int markedTasks = TaskMarkPerRound[playerId];
         int x = Math.Max(maxTasksMarkedPerRound - markedTasks, 0);
-        return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Taskinator).ShadeColor(0.25f), $"({x})");
+        return Utils.ColorString(Utils.GetRoleColor(CustomRoles.DarkFairy).ShadeColor(0.25f), $"({x})");
     }
 
     public override void AfterMeetingTasks()
@@ -111,20 +111,20 @@ internal class DarkFairy : RoleBase
         if (!player.IsAlive()) return;
         byte playerId = player.PlayerId;
 
-        if (player.Is(CustomRoles.Taskinator))
+        if (player.Is(CustomRoles.DarkFairy))
         {
             if (!TaskMarkPerRound.ContainsKey(playerId)) TaskMarkPerRound[playerId] = 0;
             if (TaskMarkPerRound[playerId] >= maxTasksMarkedPerRound)
             {
                 TaskMarkPerRound[playerId] = maxTasksMarkedPerRound;
-                Logger.Info($"Max task per round ({TaskMarkPerRound[playerId]}) reached for {player.GetNameWithRole()}", "Taskinator");
+                Logger.Info($"Max task per round ({TaskMarkPerRound[playerId]}) reached for {player.GetNameWithRole()}", "DarkFairy");
                 return;
             }
             TaskMarkPerRound[playerId]++;
             if (!taskIndex.ContainsKey(playerId)) taskIndex[playerId] = [];
             taskIndex[playerId].Add(task.Index);
             SendRPC(taskinatorID: playerId, taskIndex: task.Index);
-            player.Notify(GetString("TaskinatorBombPlanted"));
+            player.Notify(GetString("DarkFairyBombPlanted"));
         }
         else if (_Player.RpcCheckAndMurder(player, true))
         {
