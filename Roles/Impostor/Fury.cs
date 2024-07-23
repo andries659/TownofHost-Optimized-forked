@@ -72,4 +72,8 @@ internal class Fury : RoleBase
         }, RageDuration.GetFloat());
         return false;          
     }
+    public override void SetAbilityButtonText(HudManager hud, byte playerId)
+    {
+        hud.AbilityButton.OverrideText(Translator.GetString("FuryShapeshiftText"));
+    }
 }
