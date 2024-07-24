@@ -55,9 +55,9 @@ internal class Diviner : RoleBase
             Main.ResetCamPlayerList.Add(playerId);
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
-    public override bool CanUseKillButton(PlayerControl pc) => IsRevenge; | DivinerCanKill.GetBool() && pc.IsAlive(); 
+    public override bool CanUseKillButton(PlayerControl pc) => IsRevenge | CanKill.GetBool() && pc.IsAlive(); 
     public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
-    public override bool CanUseSabotage(PlayerControl pc) => CanSabogate.GetBool();
+    public override bool CanUseSabotage(PlayerControl pc) => CanSabotage.GetBool();
 
     
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
