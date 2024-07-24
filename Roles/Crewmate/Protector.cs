@@ -43,6 +43,11 @@ internal class Protector : RoleBase
         playerIdList.Add(playerId);
     }
 
+    public override void AfterMeetingTasks()
+    {
+        shield = 0;
+    }
+
     // player = Protector
     // I dont fucking know why its a bool, I dont fucking know why it needs int TaskCounts, it just needs to be that way.
     public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
