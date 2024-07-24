@@ -63,6 +63,7 @@ internal class Protector : RoleBase
         killer.RpcGuardAndKill(target);
         if (!DisableShieldAnimations.GetBool()) target.RpcGuardAndKill();
         target.Notify(GetString("ProtectorShield"));
+        shield -= 1;
         return false;
     }
 }
