@@ -1,4 +1,4 @@
-﻿using AmongUs.GameOptions;
+using AmongUs.GameOptions;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -19,6 +19,7 @@ internal class Diviner : RoleBase
     private static OptionItem RevengeTime;
     private static OptionItem CanSabotage;
     private static OptionItem CanVent; 
+    private static OptionItem CanKill;
 
     public static PlayerControl Killer = null;
     private static bool IsRevenge = false;
