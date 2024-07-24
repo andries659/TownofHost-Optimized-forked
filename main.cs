@@ -19,7 +19,7 @@ using UnityEngine;
 [assembly: AssemblyVersion(TOHE.Main.PluginVersion)]
 namespace TOHE;
 
-[BepInPlugin(PluginGuid, "TOHE", PluginVersion)]
+[BepInPlugin(PluginGuid, "TOHO", PluginVersion)]
 [BepInIncompatibility("jp.ykundesu.supernewroles")]
 [BepInProcess("Among Us.exe")]
 public class Main : BasePlugin
@@ -27,7 +27,7 @@ public class Main : BasePlugin
     // == プログラム設定 / Program Config ==
     public const string OriginalForkId = "OriginalTOH";
 
-    public static readonly string ModName = "TOHO";
+    public static readonly string ModName = "Town of Host: Optimized";
     public static readonly string ForkId = "TOHO";
     public static readonly string ModColor = "#ffc0cb";
     public static readonly bool AllowPublicRoom = true;
@@ -39,14 +39,14 @@ public class Main : BasePlugin
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
 
     public const string PluginGuid = "com.Limeau.townofhostoptimized";
-    public const string PluginVersion = "2024.0709.200.09000"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginVersion = "2024.0726.100.00000"; // YEAR.MMDD.VERSION.CANARYDEV
     public const string PluginDisplayVersion = "1.0.0";
     public const string SupportedVersionAU = "2024.6.18";
 
     /******************* Change one of the three variables to true before making a release. *******************/
-    public static readonly bool Canary = true; // ACTIVE - Latest: V2.0.0 Canary 9
-    public static readonly bool fullRelease = false; // INACTIVE - Latest: V1.6.0
-    public static readonly bool devRelease = false; // INACTIVE - Latest: V2.0.0 Dev 25
+    public static readonly bool Canary = false; // INACTIVE - Latest: (TOHE) V2.0.0 Canary 9
+    public static readonly bool fullRelease = true; // ACTIVE - Latest: V1.0.0
+    public static readonly bool devRelease = false; // INACTIVE - Latest: (TOHE) V2.0.0 Dev 25
 
     public static bool hasAccess = true;
 
