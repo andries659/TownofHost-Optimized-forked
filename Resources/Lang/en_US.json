@@ -978,6 +978,7 @@
   "EvaderInfoLong": "\nWhen the Evader is voted out, there is a chance the Evader will not be ejected.",
   "DarkFairyInfoLong": "(Neutral Evil):\nAs the Dark Fairy, you can charm tasks to charm other players. Other Dark Fairies can know each other, depending on the settings set by the host.",
   "FuryInfoLong": "(Impostor):\nAs the Fury, shapeshift to enter Rage Mode.\nRage mode changes the Fury their speed and kill cooldown for a set duration of time.\n\nAdditionally there is a setting to reveal when the Fury enters Rage Mode to everyone.\nWithout the use of Rage Mode, the Fury acts like a regular Impostor.",
+  "ConvertedInfoLong": "(Betrayal Add-ons):\nThe Converted add-on is obtained by being charmed by the Dark Fairy when they completed a similar task that you have.\nOnce converted, you are now on the Dark Fairy's team and no longer on your original team.",
   "ShowTextOverlay": "Text Overlay",
   "Overlay.GuesserMode": "<size=50%>Guesser Mode</size>",
   "Overlay.NoGameEnd": "<size=50%>No Game End</size>",
