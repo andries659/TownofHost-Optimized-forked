@@ -695,6 +695,7 @@ public enum CustomRoles
     Pacifist, 
     ChiefOfPolice, //police commisioner ///// UNUSED
     President,
+    Protector,
     Psychic,
     Randomizer,
     Reverie,
