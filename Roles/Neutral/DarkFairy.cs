@@ -124,7 +124,9 @@ internal class DarkFairy : RoleBase
             if (!taskIndex.ContainsKey(playerId)) taskIndex[playerId] = [];
             taskIndex[playerId].Add(task.Index);
             SendRPC(taskinatorID: playerId, taskIndex: task.Index);
-            player.Notify(GetString("DarkFairyBombPlanted"));
+            player.Notify(GetString("DarkFairyBombPlanted
+            Utils.NotifyRoles(SpecifySeer: player, SpecifyTarget: CustomRoles.DarkFairy, ForceLoop: true);
+            Utils.NotifyRoles(SpecifySeer: CustomRoles.DarkFairy, SpecifyTarget: player, ForceLoop: true);
         }
         else if (_Player.RpcCheckAndMurder(player, true))
         {
