@@ -2,7 +2,7 @@
 using static TOHE.Options;
 using static TOHE.Translator;
 
-namespace TOHE.Roles.Impostorl;
+namespace TOHE.Roles.Impostor;
 
 internal class Diviner : RoleBase
 {
