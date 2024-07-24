@@ -584,6 +584,7 @@ public enum CustomRoles
     Dazzler,
     Deathpact,
     Devourer,
+    Diviner,
     Disperser,
     DollMaster,
     Eraser,
