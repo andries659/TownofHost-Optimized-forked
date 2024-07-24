@@ -155,8 +155,8 @@ internal class Protector : RoleBase
         
         if (player.Is(CustomRoles.Protector))
         {
-            var benefactorPC = Utils.GetPlayerById(benefactorId);
-            if (benefactorPC == null) continue;
+            var ProtectorPC = Utils.GetPlayerById(ProtectorId);
+            if (ProtectorPC == null) continue;
 
             player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Protector), GetString("ProtectorShield")));
             player.RpcGuardAndKill();
