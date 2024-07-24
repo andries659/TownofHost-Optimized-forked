@@ -21,6 +21,8 @@ internal class Protector : RoleBase
     // Might use this check later, ignore warning
     private static bool IsShielded = false;
 
+    shield = 0;
+
     public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Protector);
@@ -47,9 +49,20 @@ internal class Protector : RoleBase
     {
         if (player.IsAlive())
         {
-        player.Notify(GetString("ProtectorShieldActive"), ShieldDuration.GetFloat());
+            player.Notify(GetString("ProtectorShieldActive"), ShieldDuration.GetFloat());
+            shield += 1;
         }
         return true;
-    // All thats needed is to just add a shield to player when OnTaskComplete
+    }
+    public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
+    {
+        if (shield <= 0)
+        {
+            return;
+        }
+        killer.RpcGuardAndKill(target);
+        if (!DisableShieldAnimations.GetBool()) target.RpcGuardAndKill();
+        target.Notify(GetString("ProtectorShield"));
+        return false;
     }
 }
