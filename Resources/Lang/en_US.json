@@ -2940,6 +2940,11 @@
   "JailedNotifyMsg": "The Jailer has jailed you. No one can guess or judge you. You can only guess The Jailer.\n\nIf Jailer votes you, you will be executed after the meeting ends.",
   "JailerTitle": "Jailer",
 
+  "ValkyrieRevengeTime":"Revenge duration",
+  "ValkyrieHide":"Hide from the Valkyrie!",
+  "ValkyrieRevenge":"You have {0}s to kill <color=#E4D339>{1}</color>",
+  "ValkyrieSuccess":"Congratulations! You live to see another day.",
+
   "CopyCatCopyCooldown": "Copy cooldown",
   "CopyCatRoleChange": "Your role has been changed to <b>{0}</b>",
   "CopyCatCanNotCopy": "You can not copy the target's role",
