@@ -31,7 +31,7 @@ internal class Protector : RoleBase
         Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Protector);
         MaxShields = IntegerOptionItem.Create(Id + 10, "ProtectorMaxShields", new(1, 14, 1), 3, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Protector])
             .SetValueFormat(OptionFormat.Votes);
-        ShieldDuration = FloatOptionItem.Create(Id + 11, "ShieldDuration", new(1, 30, 1), 10, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Protector])
+        ShieldDuration = FloatOptionItem.Create(Id + 11, "ProtectorShieldDuration", new(1, 30, 1), 10, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Protector])
             .SetValueFormat(OptionFormat.Seconds);
         ShieldIsOneTimeUse = BooleanOptionItem.Create(Id + 12, "ShieldIsOneTimeUse", false, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Protector]);
         Options.OverrideTasksData.Create(Id + 13, TabGroup.CrewmateRoles, CustomRoles.Protector);
