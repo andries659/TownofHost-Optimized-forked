@@ -46,41 +46,41 @@ internal class DarkFairy : RoleBase
         TaskMarkPerRound[playerId] = 0;
     }
 
-    private void SendRPC(byte taskinatorID, int taskIndex = -1, bool isKill = false, bool clearAll = false)
+    private void SendRPC(byte darkfairyID, int taskIndex = -1, bool isKill = false, bool clearAll = false)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
         writer.WriteNetObject(_Player); //DarkFairyMarkedTask
-        writer.Write(taskinatorID);
+        writer.Write(darkfairyID);
         writer.Write(taskIndex);
         writer.Write(isKill);
         writer.Write(clearAll);
         if (!isKill)
         {            
-            writer.Write(TaskMarkPerRound[taskinatorID]);   
+            writer.Write(TaskMarkPerRound[darkfairyID]);   
         }
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
-        byte taskinatorID = reader.ReadByte();
+        byte darkfairyID = reader.ReadByte();
         int taskInd = reader.ReadInt32();
         bool isKill = reader.ReadBoolean();
         bool clearAll = reader.ReadBoolean();
         if (!isKill)
         {
             int uses = reader.ReadInt32();
-            TaskMarkPerRound[taskinatorID] = uses;
+            TaskMarkPerRound[darkfairyID] = uses;
             if (!clearAll) 
             { 
-                if (!taskIndex.ContainsKey(taskinatorID)) taskIndex[taskinatorID] = [];
-                taskIndex[taskinatorID].Add(taskInd);
+                if (!taskIndex.ContainsKey(darkfairyID)) taskIndex[darkfairyID] = [];
+                taskIndex[darkfairyID].Add(taskInd);
             }
         }
         else
         {
-            if (taskIndex.ContainsKey(taskinatorID)) taskIndex[taskinatorID].Remove(taskInd);
+            if (taskIndex.ContainsKey(darkfairyID)) taskIndex[darkfairyID].Remove(taskInd);
         }
-        if (clearAll && taskIndex.ContainsKey(taskinatorID)) taskIndex[taskinatorID].Clear(); 
+        if (clearAll && taskIndex.ContainsKey(darkfairyID)) taskIndex[darkfairyID].Clear(); 
     }
 
     public override string GetProgressText(byte playerId, bool cooms)
@@ -123,22 +123,23 @@ internal class DarkFairy : RoleBase
             TaskMarkPerRound[playerId]++;
             if (!taskIndex.ContainsKey(playerId)) taskIndex[playerId] = [];
             taskIndex[playerId].Add(task.Index);
-            SendRPC(taskinatorID: playerId, taskIndex: task.Index);
-            player.Notify(GetString("DarkFairyBombPlanted
-            Utils.NotifyRoles(SpecifySeer: player, SpecifyTarget: CustomRoles.DarkFairy, ForceLoop: true);
-            Utils.NotifyRoles(SpecifySeer: CustomRoles.DarkFairy, SpecifyTarget: player, ForceLoop: true);
+            SendRPC(darkfairyID: playerId, taskIndex: task.Index);
+            player.Notify(GetString("DarkFairyBombPlanted"));
+//          Utils.NotifyRoles(SpecifySeer: player, SpecifyTarget: CustomRoles.DarkFairy, ForceLoop: true);
+//          Utils.NotifyRoles(SpecifySeer: CustomRoles.DarkFairy, SpecifyTarget: player, ForceLoop: true);
+        // OnOthersTaskComplete can't apply any secondary person, maybe use this with the RpcCheckAndMurder?
         }
         else if (_Player.RpcCheckAndMurder(player, true))
         {
-            foreach (var taskinatorId in taskIndex.Keys)
+            foreach (var darkfairyId in taskIndex.Keys)
             { 
-                if (taskIndex[taskinatorId].Contains(task.Index))
+                if (taskIndex[darkfairyId].Contains(task.Index))
                 {
                     
                     player.RpcSetCustomRole(CustomRoles.Converted);
 
-                    taskIndex[taskinatorId].Remove(task.Index);
-                    SendRPC(taskinatorID : taskinatorId, taskIndex:task.Index, isKill : true);
+                    taskIndex[darkfairyId].Remove(task.Index);
+                    SendRPC(darkfairyID : darkfairyId, taskIndex:task.Index, isKill : true);
                     Logger.Info($"{player.GetAllRoleName()} was charmed by the dark fairy", "Dark Fairy");
                 }
             }
