@@ -1,4 +1,5 @@
 using System;
+using static TOHE.Options;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
@@ -18,10 +19,7 @@ internal class Protector : RoleBase
     private static OptionItem ShieldDuration;
     private static OptionItem ShieldIsOneTimeUse;
 
-    // Might use this check later, ignore warning
     private static bool IsShielded = false;
-
-    shield = 0;
 
     public override void SetupCustomOption()
     {
@@ -45,7 +43,7 @@ internal class Protector : RoleBase
 
     public override void AfterMeetingTasks()
     {
-        shield = 0;
+        IsShielded = false;
     }
 
     // player = Protector
@@ -55,20 +53,19 @@ internal class Protector : RoleBase
         if (player.IsAlive())
         {
             player.Notify(GetString("ProtectorShieldActive"), ShieldDuration.GetFloat());
-            shield += 1;
+            IsShielded = true;
         }
         return true;
     }
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
-        if (shield <= 0)
+        if (IsShielded == true)
         {
-            return;
-        }
         killer.RpcGuardAndKill(target);
         if (!DisableShieldAnimations.GetBool()) target.RpcGuardAndKill();
         target.Notify(GetString("ProtectorShield"));
-        shield -= 1;
+        IsShielded = false;
+        }
         return false;
     }
 }
