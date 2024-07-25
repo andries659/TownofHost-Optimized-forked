@@ -1,4 +1,9 @@
+using AmongUs.GameOptions;
 using System;
+using Hazel;
+using InnerNet;
+using System.Text;
+using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -19,7 +24,7 @@ internal class Protector : RoleBase
     private static OptionItem ShieldDuration;
     private static OptionItem ShieldIsOneTimeUse;
 
-    private static bool IsShielded = false;
+    private long? TimeStamp;
 
     public override void SetupCustomOption()
     {
@@ -31,41 +36,76 @@ internal class Protector : RoleBase
         ShieldIsOneTimeUse = BooleanOptionItem.Create(Id + 12, "ShieldIsOneTimeUse", false, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Protector]);
         Options.OverrideTasksData.Create(Id + 13, TabGroup.CrewmateRoles, CustomRoles.Protector);
     }
-    public override void Init()
-    {
-        playerIdList.Clear();
-    }
-
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
-    }
+        AbilityLimit = MaxShields.GetInt();
+        TimeStamp = 0;
 
-    public override void AfterMeetingTasks()
+        if (!Main.ResetCamPlayerList.Contains(playerId))
+            Main.ResetCamPlayerList.Add(playerId);
+    }
+    private void SendRPC(byte playerId)
     {
-        IsShielded = false;
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WriteNetObject(_Player);
+        writer.Write(playerId);
+        writer.Write(TimeStamp.ToString());
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
+    {
+        byte PlayerId = reader.ReadByte();
+        string Time = reader.ReadString();
+        TimeStamp = long.Parse(Time);
+    }
+    private bool ProtectorInProtect(byte playerId) => TimeStamp > Utils.GetTimeStamp();
 
-    // player = Protector
-    // I dont fucking know why its a bool, I dont fucking know why it needs int TaskCounts, it just needs to be that way.
     public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
         if (player.IsAlive())
+        if (AbilityLimit >= 1)
         {
-            player.Notify(GetString("ProtectorShieldActive"), ShieldDuration.GetFloat());
-            IsShielded = true;
+            AbilityLimit--;
+            TimeStamp = Utils.GetTimeStamp() + (long)ShieldDuration.GetFloat();
+            SendRPC(player.PlayerId);
+            player.Notify(GetString("ProtectorInProtect"));
         }
         return true;
     }
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
-        if (IsShielded == true)
+        if (ProtectorInProtect(target.PlayerId))
         {
         killer.RpcGuardAndKill(target);
         if (!DisableShieldAnimations.GetBool()) target.RpcGuardAndKill();
         target.Notify(GetString("ProtectorShield"));
-        IsShielded = false;
-        }
         return false;
+        }
+        else if (killer.GetCustomRole() == target.GetCustomRole()) return false;
+        return true;
+    }
+    public override void OnFixedUpdateLowLoad(PlayerControl pc)
+    {
+        if (TimeStamp < Utils.GetTimeStamp() && TimeStamp != 0)
+        {
+            TimeStamp = 0;
+            pc.Notify(GetString("ProtectorShieldOut"), sendInLog: false);
+        }
+    }
+    public override string GetLowerText(PlayerControl pc, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
+    {
+        if (pc == null || isForMeeting || !isForHud || !pc.IsAlive()) return string.Empty;
+
+        var str = new StringBuilder();
+        if (ProtectorInProtect(pc.PlayerId))
+        {
+            var remainTime = TimeStamp - Utils.GetTimeStamp();
+            str.Append(string.Format(GetString("ProtectorSkillTimeRemain"), remainTime));
+        }
+        else
+        {
+            str.Append(GetString("ProtectorSkillNotice"));
+        }
+        return str.ToString();
     }
 }
