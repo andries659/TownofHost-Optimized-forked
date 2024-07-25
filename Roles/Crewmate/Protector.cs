@@ -79,6 +79,11 @@ internal class Protector : RoleBase
         killer.RpcGuardAndKill(target);
         if (!DisableShieldAnimations.GetBool()) target.RpcGuardAndKill();
         target.Notify(GetString("ProtectorShield"));
+        if (ShieldIsOneTimeUse.GetBool())
+        {
+            TimeStamp = 0;
+            Logger.Info($"{target.GetNameWithRole()} shield broken", "ProtectorShieldBroken");
+        }
         return false;
         }
         else if (killer.GetCustomRole() == target.GetCustomRole()) return false;
@@ -89,7 +94,7 @@ internal class Protector : RoleBase
         if (TimeStamp < Utils.GetTimeStamp() && TimeStamp != 0)
         {
             TimeStamp = 0;
-            pc.Notify(GetString("ProtectorShieldOut"), sendInLog: false);
+            pc.Notify(GetString("ProtectorShieldBrokenOrEnded"), sendInLog: false);
         }
     }
     public override string GetLowerText(PlayerControl pc, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
