@@ -3719,5 +3719,8 @@
   "WardenWarn": "DANGER! RUN!",
 
   "MinionAbilityTime": "Ability Duration",
-  "Minion_Blind": "blinded"
+  "Minion_Blind": "blinded",
+
+  "TaskMarkPerRound": "Number of tasks that can be marked in one round",
+  "DarkFairyBombPlanted": "Bomb has been planted",
 }
