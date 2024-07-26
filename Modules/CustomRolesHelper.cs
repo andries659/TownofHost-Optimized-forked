@@ -188,7 +188,8 @@ public static class CustomRolesHelper
             CustomRoles.Jackal or
             CustomRoles.Juggernaut or
             CustomRoles.BloodKnight or
-            CustomRoles.Cultist;
+            CustomRoles.Cultist or
+            CustomRoles.DarkFairy;
     }
     public static bool IsTasklessCrewmate(this CustomRoles role)
     {
@@ -279,7 +280,8 @@ public static class CustomRolesHelper
             CustomRoles.Cultist or
             CustomRoles.Necromancer or
             CustomRoles.Virus or
-            CustomRoles.Spiritcaller;
+            CustomRoles.Spiritcaller or
+            CustomRoles.DarkFairy;
 
     public static bool IsMadmate(this CustomRoles role)
     {
@@ -295,6 +297,7 @@ public static class CustomRolesHelper
                 or CustomRoles.Infected
                 or CustomRoles.Contagious
                 or CustomRoles.Soulless
+                or CustomRoles.Darkened
                 or CustomRoles.Madmate ||
                 (role is CustomRoles.Egoist && Egoist.EgoistCountAsConverted.GetBool()));
     }
@@ -337,7 +340,8 @@ public static class CustomRolesHelper
             or CustomRoles.Infected
             or CustomRoles.Contagious
             or CustomRoles.Rascal
-            or CustomRoles.Soulless;
+            or CustomRoles.Soulless
+            or CustomRoles.Darkened;
     }
 
     public static bool IsImpOnlyAddon(this CustomRoles role)
@@ -1216,6 +1220,7 @@ public static class CustomRolesHelper
            CustomRoles.RuthlessRomantic => CountTypes.RuthlessRomantic,
            CustomRoles.SchrodingersCat => CountTypes.None,
            CustomRoles.Solsticer => CountTypes.None,
+           CustomRoles.DarkFairy => CountTypes.DarkFairy,
            _ => role.IsImpostorTeam() ? CountTypes.Impostor : CountTypes.Crew,
 
            // CustomRoles.Phantom => CountTypes.OutOfGame,
@@ -1280,6 +1285,7 @@ public static class CustomRolesHelper
             CustomRoles.RuthlessRomantic => CustomWinner.RuthlessRomantic,
             CustomRoles.Mini => CustomWinner.NiceMini,
             CustomRoles.Doppelganger => CustomWinner.Doppelganger,
+            CustomRoles.DarkFairy => CustomWinner.DarkFairy,
             _ => throw new NotImplementedException()
 
         };
@@ -1400,5 +1406,7 @@ public enum CountTypes
     Werewolf,
     Agitater,
     RuthlessRomantic,
-    Necromancer
+    Necromancer,
+    DarkFairy,
+    Darkened
 }
