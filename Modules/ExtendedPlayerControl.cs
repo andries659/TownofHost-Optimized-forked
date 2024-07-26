@@ -1069,7 +1069,7 @@ static class ExtendedPlayerControl
                 or CustomRoles.Charmed
                 or CustomRoles.Infected
                 or CustomRoles.Contagious
-                or CustomRoles.Converted
+                or CustomRoles.Darkened
                 or CustomRoles.Egoist) 
             && KnowSubRoleTarget(seer, target))
             return true;
