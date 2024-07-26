@@ -769,7 +769,8 @@ static class ExtendedPlayerControl
             || sheriff.Is(CustomRoles.Charmed)
             || sheriff.Is(CustomRoles.Infected)
             || sheriff.Is(CustomRoles.Contagious)
-            || sheriff.Is(CustomRoles.Egoist);
+            || sheriff.Is(CustomRoles.Egoist)
+            || sheriff.Is(CustomRoles.Darkened);
     }
     public static bool ShouldBeDisplayed(this CustomRoles subRole)
     {
@@ -782,6 +783,7 @@ static class ExtendedPlayerControl
             CustomRoles.Soulless and not
             CustomRoles.Lovers and not
             CustomRoles.Infected and not
+            CustomRoles.Darkened and not
             CustomRoles.Contagious;
     }
     public static void RpcExileV2(this PlayerControl player)
