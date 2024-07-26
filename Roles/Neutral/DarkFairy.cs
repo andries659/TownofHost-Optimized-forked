@@ -142,12 +142,12 @@ internal class DarkFairy : RoleBase
                 }
             }
         }
-        public static bool KnowRole(PlayerControl player, PlayerControl target) // Addons know each-other
-        {
-            if (player.Is(CustomRoles.Converted) && target.Is(CustomRoles.DarkFairy)) return true;
-            if (player.Is(CustomRoles.DarkFairy) && target.Is(CustomRoles.Converted)) return true;
-            if (player.Is(CustomRoles.Converted) && target.Is(CustomRoles.Converted)) return true;
-            return false;
-        }
+    }
+    public static bool KnowRole(PlayerControl player, PlayerControl target) // Addons know each-other
+    {
+        if (player.Is(CustomRoles.Converted) && target.Is(CustomRoles.DarkFairy)) return true;
+        if (player.Is(CustomRoles.DarkFairy) && target.Is(CustomRoles.Converted)) return true;
+        if (player.Is(CustomRoles.Converted) && target.Is(CustomRoles.Converted)) return true;
+        return false;
     }
 }
