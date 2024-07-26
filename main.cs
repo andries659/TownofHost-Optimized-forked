@@ -820,7 +820,7 @@ public enum CustomRoles
     Cleansed,
     Clumsy,
     Contagious,
-    Converted,
+    Darkened,
     Cyber,
     Unreportable, //disregarded
     Diseased,
