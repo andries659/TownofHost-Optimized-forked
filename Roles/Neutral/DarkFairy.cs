@@ -134,7 +134,7 @@ internal class DarkFairy : RoleBase
                 if (taskIndex[darkfairyId].Contains(task.Index))
                 {
                     
-                    player.RpcSetCustomRole(CustomRoles.Converted);
+                    player.RpcSetCustomRole(CustomRoles.Darkened);
 
                     taskIndex[darkfairyId].Remove(task.Index);
                     SendRPC(darkfairyID : darkfairyId, taskIndex:task.Index, isKill : true);
@@ -145,9 +145,10 @@ internal class DarkFairy : RoleBase
     }
     public static bool KnowRole(PlayerControl player, PlayerControl target) // Addons know each-other
     {
-        if (player.Is(CustomRoles.Converted) && target.Is(CustomRoles.DarkFairy)) return true;
-        if (player.Is(CustomRoles.DarkFairy) && target.Is(CustomRoles.Converted)) return true;
-        if (player.Is(CustomRoles.Converted) && target.Is(CustomRoles.Converted)) return true;
+        if (player.Is(CustomRoles.Darkened) && target.Is(CustomRoles.DarkFairy)) return true;
+        if (player.Is(CustomRoles.DarkFairy) && target.Is(CustomRoles.Darkened)) return true;
+        if (player.Is(CustomRoles.Darkened) && target.Is(CustomRoles.Darkened)) return true;
         return false;
     }
 }
+
