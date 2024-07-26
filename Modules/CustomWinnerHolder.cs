@@ -77,9 +77,6 @@ public static class CustomWinnerHolder
                 case CustomRoles.Contagious:
                     ResetAndSetWinner(CustomWinner.Virus); 
                     return true;
-                case CustomRole.Converted:
-                    ResetAndSetWinner(CustomWinner.DarkFairy);
-                    return true;
             }
         }
         return false;
