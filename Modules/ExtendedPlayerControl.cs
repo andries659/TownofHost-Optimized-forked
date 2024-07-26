@@ -1042,6 +1042,12 @@ static class ExtendedPlayerControl
                 logger.Info($"Virus Know Role");
             return true;
         }
+        else if (DarkFairy.KnowRole(seer, target))
+        {
+            if (isVanilla)
+                logger.Info($"Dark Fairy Know Role");
+            return true;
+        }
 
 
         else return false;
@@ -1063,6 +1069,7 @@ static class ExtendedPlayerControl
                 or CustomRoles.Charmed
                 or CustomRoles.Infected
                 or CustomRoles.Contagious
+                or CustomRoles.Converted
                 or CustomRoles.Egoist) 
             && KnowSubRoleTarget(seer, target))
             return true;
@@ -1088,6 +1095,7 @@ static class ExtendedPlayerControl
         else if (Cultist.HasEnabled && Cultist.KnowRole(seer, target)) return true;
         else if (Infectious.HasEnabled && Infectious.KnowRole(seer, target)) return true;
         else if (Virus.HasEnabled && Virus.KnowRole(seer, target)) return true;
+        else if (DarkFairy.HasEnabled && DarkFairy.KnowRole(seer, target)) return true;
         else if (Jackal.HasEnabled)
         {
             if (seer.Is(CustomRoles.Jackal) || seer.Is(CustomRoles.Recruit))
