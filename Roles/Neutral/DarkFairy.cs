@@ -125,8 +125,6 @@ internal class DarkFairy : RoleBase
             taskIndex[playerId].Add(task.Index);
             SendRPC(darkfairyID: playerId, taskIndex: task.Index);
             player.Notify(GetString("DarkFairyBombPlanted"));
-//          Utils.NotifyRoles(SpecifySeer: player, SpecifyTarget: CustomRoles.DarkFairy, ForceLoop: true);
-//          Utils.NotifyRoles(SpecifySeer: CustomRoles.DarkFairy, SpecifyTarget: player, ForceLoop: true);
         // OnOthersTaskComplete can't apply any secondary person, maybe use this with the RpcCheckAndMurder?
         }
         else if (_Player.RpcCheckAndMurder(player, true))
@@ -143,6 +141,13 @@ internal class DarkFairy : RoleBase
                     Logger.Info($"{player.GetAllRoleName()} was charmed by the dark fairy", "Dark Fairy");
                 }
             }
+        }
+        public static bool KnowRole(PlayerControl player, PlayerControl target) // Addons know each-other
+        {
+            if (player.Is(CustomRoles.Converted) && target.Is(CustomRoles.DarkFairy)) return true;
+            if (player.Is(CustomRoles.DarkFairy) && target.Is(CustomRoles.Converted)) return true;
+            if (player.Is(CustomRoles.Converted) && target.Is(CustomRoles.Converted)) return true;
+            return false;
         }
     }
 }
