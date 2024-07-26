@@ -1,4 +1,4 @@
-namespace TOHE;
+namespace TOHO;
 
 public class PresetOptionItem(int defaultValue, TabGroup tab, bool vanilla) : OptionItem(0, "Preset", defaultValue, tab, true, vanillaStr:vanilla)
 {
