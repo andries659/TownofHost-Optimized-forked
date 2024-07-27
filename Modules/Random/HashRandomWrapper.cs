@@ -1,4 +1,4 @@
-namespace TOHO;
+namespace TOHE;
 
 public class HashRandomWrapper : IRandom
 {
