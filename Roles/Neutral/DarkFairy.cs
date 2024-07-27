@@ -16,11 +16,19 @@ internal class DarkFairy : RoleBase
     private const int Id = 29100;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.DarkFairy);
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralEvil;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralChaos;
     //==================================================================\\
     public override bool HasTasks(NetworkedPlayerInfo player, CustomRoles role, bool ForRecompute) => !ForRecompute;
 
     private static OptionItem TaskMarkPerRoundOpt;
+    public static OptionItem DarkenedCountMode;
+
+    private enum DarkenedCountModeSelectList
+    {
+        DarkFairy_DarkenedCountMode_None,
+        DarkFairy_DarkenedCountMode_DarkFairy,
+        DarkFairy_DarkenedCountMode_Original
+    }
 
     private static readonly Dictionary<byte, List<int>> taskIndex = [];
     private static readonly Dictionary<byte, int> TaskMarkPerRound = [];
@@ -33,6 +41,7 @@ internal class DarkFairy : RoleBase
         TaskMarkPerRoundOpt = IntegerOptionItem.Create(Id + 10, "TasksMarkPerRound", new(1, 14, 1), 3, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.DarkFairy])
             .SetValueFormat(OptionFormat.Votes);
         Options.OverrideTasksData.Create(Id + 11, TabGroup.NeutralRoles, CustomRoles.DarkFairy);
+        DarkenedCountMode = StringOptionItem.Create(Id + 17, "DarkFairy_DarkenedCountMode", EnumHelper.GetAllNames<DarkenedCountModeSelectList>(), 1, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.DarkFairy]);
     }
 
     public override void Init()

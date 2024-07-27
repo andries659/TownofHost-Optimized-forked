@@ -100,6 +100,16 @@ public class PlayerState(byte playerId)
                 _ => throw new NotImplementedException()
             };
         }
+        if (pc.Is(CustomRoles.Darkened))
+        {
+            countTypes = DarkFairy.DarkenedCountMode.GetInt() switch
+            {
+                0 => CountTypes.OutOfGame,
+                1 => CountTypes.DarkFairy,
+                2 => countTypes,
+                _ => throw new NotImplementedException()
+            };
+        }
         if (pc.Is(CustomRoles.Admired))
         {
             countTypes = CountTypes.Crew;
@@ -188,6 +198,16 @@ public class PlayerState(byte playerId)
                 {
                     0 => CountTypes.OutOfGame,
                     1 => CountTypes.Virus,
+                    2 => countTypes,
+                    _ => throw new NotImplementedException()
+                };
+                break;
+
+            case CustomRoles.Darkened:
+                countTypes = DarkFairy.DarkenedCountMode.GetInt() switch
+                {
+                    0 => CountTypes.OutOfGame,
+                    1 => CountTypes.DarkFairy,
                     2 => countTypes,
                     _ => throw new NotImplementedException()
                 };
