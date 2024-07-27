@@ -2,7 +2,7 @@ using AmongUs.GameOptions;
 using System;
 
 
-namespace TOHO;
+namespace TOHE;
 
 public class OptionBackupData
 {
