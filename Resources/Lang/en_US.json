@@ -3725,7 +3725,7 @@
 
   "TaskMarkPerRound": "Number of tasks that can be marked in one round",
   "DarkFairyBombPlanted": "Bomb has been planted"
-  "DarkFairy_DarkenedCountMode": "<color=#cf6acd>Darkened</color> players count as",
+  "DarkFairy_DarkenedCountMode": "<color=#4B0082>Darkened</color> players count as",
   "DarkFairy_DarkenedCountMode_None": "Nothing",
   "DarkFairy_DarkenedCountMode_DarkFairy": "<color=#4B0082>Dark Fairy</color>",
   "DarkFairy_DarkenedCountMode_Original": "Original Team",
