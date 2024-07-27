@@ -1,8 +1,8 @@
 using System;
-using TOHO.Modules;
+using TOHE.Modules;
 using UnityEngine;
 
-namespace TOHO;
+namespace TOHE;
 
 public abstract class OptionItem
 {
