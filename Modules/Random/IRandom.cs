@@ -1,6 +1,6 @@
 using System;
 
-namespace TOHO;
+namespace TOHE;
 
 public interface IRandom
 {
